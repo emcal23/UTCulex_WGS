@@ -1,0 +1,14 @@
+Step 1. How to download these files from Yale server 
+  Tried manually but they were huge, def not enough space on my Mac 
+emcalhoun@Ems-MacBook-Pro Desktop % df -h ~
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk1s2   466Gi   124Gi   324Gi    28%    897k  3.4G    0%   /System/Volumes/Data
+emcalhoun@Ems-MacBook-Pro Desktop % ls /Volumes
+LaCie		Macintosh HD
+
+emcalhoun@Ems-MacBook-Pro Desktop % df -h /Volumes/LaCie
+
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s2   3.6Ti   286Gi   3.4Ti     8%    723k   36G    0%   /Volumes/LaCie
+  
+  I do have enough space on Lacie, so I think my plan for now is to ssh into CHPC get the files into our saarmangroup folder then get them onto Lacie 
