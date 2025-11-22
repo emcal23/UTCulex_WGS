@@ -1,14 +1,10 @@
-Step 1. How to download these files from Yale server 
-  Tried manually but they were huge, def not enough space on my Mac 
-emcalhoun@Ems-MacBook-Pro Desktop % df -h ~
-Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
-/dev/disk1s2   466Gi   124Gi   324Gi    28%    897k  3.4G    0%   /System/Volumes/Data
-emcalhoun@Ems-MacBook-Pro Desktop % ls /Volumes
-LaCie		Macintosh HD
+# How to download files 
 
-emcalhoun@Ems-MacBook-Pro Desktop % df -h /Volumes/LaCie
+-Norah recommended downloading manually onto Lacie hard drive, worked but took a long time!
+-Now that all are on Lacie, tried using Cyber Duck to get them onto CHPC - did not work. do i need to be using the U's VPN?
+-Tried Globus but that didn't seem to work either 
+-Now trying new method going directly form web server to CHPC- this is what I was thinking originally and it worked well, a little slow
 
-Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
-/dev/disk3s2   3.6Ti   286Gi   3.4Ti     8%    723k   36G    0%   /Volumes/LaCie
-  
-  I do have enough space on Lacie, so I think my plan for now is to ssh into CHPC get the files into our saarmangroup folder then get them onto Lacie 
+wget -r -np -nd -A "fastq,fastq.gz" \
+? http://fcb.ycga.yale.edu:3010/TKlineFkigyao4idvY09P1b0xrr__cg/sample_dir_000019646/
+--2025-11-21 12:31:32--  http://fcb.ycga.yale.edu:3010/TKlineFkigyao4idvY09P1b0xrr__cg/sample_dir_000019646/
