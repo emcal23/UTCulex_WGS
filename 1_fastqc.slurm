@@ -21,7 +21,7 @@ module load fastqc/0.12.1
 
 # Input and output files
 input_folder="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_raw"
-output_folder="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastQC_WGSCx"
+output_folder="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastQC_WGS_Cx"
 
 
 # Create the output folder if it doesn't exist
@@ -29,16 +29,18 @@ mkdir -p "$output_folder"
 chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
 
 # Run FastQC on all FASTQ files in the input folder
-for fastq_file in "$input_folder"/*.fq*; do
+for fastq_file in "$input_folder"/*.fastq.gz; do
 # Check if the file is a regular file
   if [ -f "$fastq_file" ]; then
-        # Extract the file name without the path and extension
-        base_name=$(basename -s .fq "$fastq_file")
+        
+# Extract the file name without the path and extension
+  
+    base_name=$(basename "$fastq_file" .fastq.gz)
 
-        # Run FastQC on the current FASTQ file
+# Run FastQC on the current FASTQ file
         fastqc "$fastq_file" --outdir="$output_folder"
 
-        # Print a message indicating completion for this file
+# Print a message indicating completion for this file
         echo "FastQC completed for $base_name"
     fi
 done
