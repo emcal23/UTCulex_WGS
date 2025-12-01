@@ -23,21 +23,28 @@ module load bwa/2020_03_19
 # input_folder="/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_processed/"
 output_folder="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS"
 
-# Download reference
-cd $output_folder
+# Create directories for each reference genome
+mkdir -p "$output_folder/Cx_pip"
+mkdir -p "$output_folder/Cx_quinq"
+
+# Download references
+cd "$output_folder/Cx_pipiens"
+
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.fna.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.gff.gz
-gunzip *.gz
-
-#Reference already here
-Pipref="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS/" 
-Quinqref="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS/" 
-
-# Permissions
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
 
 # Unzip reference if needed
-# gzip -d GCF_003710045.2_USU_Nmel_1.3_genomic.fna.gz 
+gunzip *.gz
+
+cd "$output_folder/Cx_quinq"
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/209/185/GCF_000209185.1_Cx_quinquefasciatus/GCF_000209185.1_Cx_quinquefasciatus_genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/209/185/GCF_000209185.1_Cx_quinquefasciatus/GCF_000209185.1_Cx_quinquefasciatus_genomic.gff.gz
+
+# Unzip reference if needed
+gunzip *.gz
 
 # Permissions
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
+chmod -R g+w /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS*
+
+
+
