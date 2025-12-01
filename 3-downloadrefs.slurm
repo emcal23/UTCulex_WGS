@@ -20,16 +20,18 @@
 module load bwa/2020_03_19
 
 # Replace these variables with the actual paths and filenames
-input_folder="/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_processed/"
-output_folder="/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_bwa/ref/"
+# input_folder="/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_processed/"
+output_folder="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS"
 
 # Download reference
-# cd $output_folder
-# wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/710/045/GCF_003710045.2_USU_Nmel_1.3/GCF_003710045.2_USU_Nmel_1.3_genomic.fna.gz
+cd $output_folder
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.gff.gz
+gunzip *.gz
 
 #Reference already here
-Ref="/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta" 
-
+Pipref="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS/" 
+Quinqref="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/refs_CxWGS/" 
 
 # Permissions
 chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
