@@ -28,7 +28,7 @@ mkdir -p "$output_folder/Cx_pip"
 mkdir -p "$output_folder/Cx_quinq"
 
 # Download references
-cd "$output_folder/Cx_pipiens"
+cd "$output_folder/Cx_pip"
 
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.fna.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/041/146/695/GCA_041146695.1_INRAE_Cpip_1/GCA_041146695.1_INRAE_Cpip_1_genomic.gff.gz
