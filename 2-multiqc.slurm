@@ -28,4 +28,4 @@ mkdir -p "$outdir"
 
 multiqc $in_path --outdir $outdir
 
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
+chmod -R g+w /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS*
