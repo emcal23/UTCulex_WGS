@@ -20,12 +20,11 @@
 module load  multiqc/1.12
 
 # Input and output files
-in_path="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastqc_WGS_Cx"
-outdir="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastqc_WGS_Cx/multiqc/"
+in_path="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastQC_WGS_Cx"
+outdir="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastQC_WGS_Cx/multiqc/"
 
 # Create the output folder if it doesn't exist
 mkdir -p "$outdir"
-
 
 multiqc $in_path --outdir $outdir
 
