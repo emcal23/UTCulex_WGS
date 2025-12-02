@@ -25,6 +25,8 @@ outdir="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastqc_WGS
 
 # Create the output folder if it doesn't exist
 mkdir -p "$outdir"
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
+
 
 multiqc $in_path --outdir $outdir
+
+chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD*
