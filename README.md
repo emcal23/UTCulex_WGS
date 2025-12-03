@@ -1,3 +1,5 @@
+Path to WGS data in CHPC /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts
+
 # UTCulex_WGS
 Whole Genome Sequencing data for Culex pipiens complex specimen from Utah
 
