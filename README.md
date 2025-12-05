@@ -10,14 +10,14 @@ Potential Workflow
 Step 1 — QC array job
 fastqc on raw reads, produce MultiQC report
 
-Step 2 — Trim array job
-fastp trimming, fastqc again on trimmed reads?
+Step 2 — Align array job
+bwa mem to align to Cx pipiens reference and trims
+  *Is it possiblle or helpful to add other references as outgroups?
 
-Step 3 — Align array job
-bwa mem to align to Cx pipiens reference, samtools sort
+Step 3 - Remove PCR duplicates 
+samtools  
 
-Step 4 — Per-sample gVCF array job
-GATK HaplotypeCaller → .g.vcf.gz
+Step 4 — Variant calling 
+bcftools
 
-Step 5 — Joint steps (not arrays)
-GenomicsDBImport / CombineGVCFs, GenotypeGVCFs, VCF filtering, PCA/ADMIXTURE/etc.
+Step 5 - Filtering
