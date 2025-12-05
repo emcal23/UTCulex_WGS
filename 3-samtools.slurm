@@ -14,6 +14,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 
+# Load samtools to remove PCR duplicates
 
 module load samtools/1.16
 
