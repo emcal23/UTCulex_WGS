@@ -13,22 +13,17 @@
 #SBATCH --mail-type=FAIL
 
 # Load modules
-module load bwa-mem/2.2.1
+module load bwa/2020_03_19
+module load samtools/1.16
 
-# Base folder containing your reference genomes
-REFS="/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref"
+# Change to the directory where the input data is located
+cd /uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS/fastQC_WGS_Cx
 
-##########################
-# Index Cx pipiens
-##########################
-cd "$REFS/Cx_pip"
-
-# Rename for simplicity
-mv Cpip29_nodeb_gfill_mito.fasta Cx_pipiens.fna
-
-# BWA-MEM2 index
-bwa-mem2 index Cx_pipiens.fna
-
+# Run the Perl script with the input files
+perl /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts/ *.fq.gz
 
 # Permissions
-chmod -R g+w /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS*
+chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS*
+
+# Resource
+# https://catchenlab.life.illinois.edu/stacks/manual/#refmapbyhand
