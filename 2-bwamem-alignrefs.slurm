@@ -20,7 +20,7 @@ module load samtools/1.16
 cd /uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS/fastQC_WGS_Cx
 
 # Run the Perl script with the input files
-perl /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts/ *.fq.gz
+perl /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts/2b_bwa_mem.pl *.fq.gz
 
 # Permissions
 chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS*
