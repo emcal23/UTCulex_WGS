@@ -13,7 +13,7 @@
 #SBATCH --mail-type=FAIL
 
 # Load modules
-module load bwa/2020_03_19
+module load bwa-mem/2.2.1
 module load samtools/1.16
 
 # Change to the directory where the input data is located
