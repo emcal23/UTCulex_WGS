@@ -17,7 +17,8 @@ module load bwa/2020_03_19
 module load samtools/1.16
 
 # Change to the directory where the input data is located
-cd /uufs/chpc.utah.edu/common/home/u1055819/saarman-group1/Cx_WGS/Cx_WGS_raw
+cd /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_raw
+
 
 # Run the Perl script with the input files
 perl /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts/2b_bwa_mem.pl *.fastq.gz
