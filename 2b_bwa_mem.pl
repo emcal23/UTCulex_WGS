@@ -8,10 +8,10 @@ my $max = 20;  # Set the maximum number of parallel processes to 1 for testing, 
 my $pm = Parallel::ForkManager->new($max);  # Create a new Parallel::ForkManager object with the specified maximum
 
 # Path to the reference genome file
-my $genome = "/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta";
+my $genome = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta";
 
 # Output directory
-my $output_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group1/Cx_WGS/Cx_WGS_bwa";
+my $output_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa";
 
 # Path to samtools
 my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
