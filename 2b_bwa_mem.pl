@@ -13,11 +13,15 @@ my $genome = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bw
 # Output directory
 my $output_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa";
 
-# Path to samtools
-my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
-
 # Path to bwa-mem2 binary
-my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2.2.1/bin/bwa";
+my $bwa = "bwa"; #module loaded in SLURM
+#my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2.2.1/bin/bwa";
+
+# Path to samtools
+my $samtools = "samtools"; #module loaded in SLURM
+#my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
+
+
 
 FILES:
 foreach my $fq1 (@ARGV) {  # Iterate over each file passed as an argument
