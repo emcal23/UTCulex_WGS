@@ -19,8 +19,9 @@ my $bwa = "/uufs/chpc.utah.edu/sys/installdir/r8/bwa-mem/2.2.1-smem_alloc/bwa-me
 #my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2.2.1/bin/bwa";
 
 # Path to samtools
-my $samtools = "samtools"; #module loaded in SLURM
-#my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
+my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
+#my $samtools = "samtools"; #module loaded in SLURM
+
 
 
 
