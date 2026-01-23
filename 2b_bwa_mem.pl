@@ -21,14 +21,20 @@ my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2020_03_19/bin/bwa";
 
 FILES:
 foreach my $fq1 (@ARGV) {  # Iterate over each file passed as an argument
+    next unless $fq1 =~ /_R1_001\.fastq\.gz$/; # only process R1 files
+    
     $pm->start and next FILES;  # Fork a new process and move to the next file if in the parent process
 
     # Extract the identifier from the filename
-    $fq1 =~ m/([A-Za-z_\-0-9]+)\.fq\.gz$/ or die "failed match for file $fq1\n";
+    $fq1 =~ m/(.+)_R1_001\.fastq\.gz$/ or die "failed match for file $fq1\n";
     my $ind = $1;  # Store the identifier in $ind
 
+     # Infer R2 filename
+    my $fq2 = "${ind}_R2_001.fastq.gz";
+    die "Missing R2 file for $ind\n" unless -e $fq2;
+
     # Run the BWA-MEM2 alignment and process with samtools, could add -K 1000000 -c 1000 to reduce mem?
-    my $cmd = "$bwa mem -M -t 1 $genome $fq1 | $samtools view -b | $samtools sort --threads 1 > ${output_dir}/${ind}.bam";
+    my $cmd = "$bwa mem -M -t 1 $genome $fq1 $fq2 | $samtools view -b | $samtools sort --threads 1 > ${output_dir}/${ind}.bam";
     system($cmd) == 0 or die "system $cmd failed: $?";
 
     print "Alignment completed for $ind\n";
