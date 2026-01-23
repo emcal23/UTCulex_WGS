@@ -24,7 +24,7 @@ cd /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_raw
 perl /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_scripts/2b_bwa_mem.pl *.fastq.gz
 
 # Permissions
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS*
+chmod -R g+w /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS*
 
 # Resource
 # https://catchenlab.life.illinois.edu/stacks/manual/#refmapbyhand
