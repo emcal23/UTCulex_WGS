@@ -14,7 +14,8 @@ my $genome = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bw
 my $output_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa";
 
 # Path to bwa-mem2 binary
-my $bwa = "bwa-mem2"; #module loaded in SLURM
+my $bwa = "/uufs/chpc.utah.edu/sys/installdir/r8/bwa-mem/2.2.1-smem_alloc/bwa-mem2.avx2";
+#my $bwa = "bwa-mem2"; #module loaded in SLURM
 #my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2.2.1/bin/bwa";
 
 # Path to samtools
