@@ -13,44 +13,46 @@ my $genome = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bw
 # Output directory
 my $output_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa";
 
-# Path to bwa-mem2 binary
+# Path to bwa-mem2 and samtools binary
 my $bwa = "/uufs/chpc.utah.edu/sys/installdir/r8/bwa-mem/2.2.1-smem_alloc/bwa-mem2.avx2";
 #my $bwa = "bwa-mem2"; #module loaded in SLURM
 #my $bwa = "/uufs/chpc.utah.edu/sys/installdir/bwa/2.2.1/bin/bwa";
-
-# Path to samtools
 my $samtools = "/uufs/chpc.utah.edu/sys/installdir/samtools/1.16/bin/samtools";
 #my $samtools = "samtools"; #module loaded in SLURM
 
+# Directory containing raw FASTQ files
+my $raw_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_raw";
 
+# Get all R1 FASTQs in that directory
+opendir(my $dh, $raw_dir) or die "Can't open $raw_dir: $!";
+my @fq1_files = grep { /_R1_001\.fastq\.gz$/ } readdir($dh);
+closedir($dh);
 
 
 FILES:
-foreach my $fq1 (@ARGV) {  # Iterate over each file passed as an argument
-    next unless $fq1 =~ /_R1_001\.fastq\.gz$/; # only process R1 files
-    
-    $pm->start and next FILES;  # Fork a new process and move to the next file if in the parent process
+foreach my $fq1 (@fq1_files) {
+    $pm->start and next FILES;
 
-    # Extract the identifier from the filename
+    # Full path to R1
+    my $fq1_path = "$raw_dir/$fq1";
+
+    # Extract identifier
     $fq1 =~ m/(.+)_R1_001\.fastq\.gz$/ or die "failed match for file $fq1\n";
-    my $ind = $1;  # Store the identifier in $ind
+    my $ind = $1;
 
-     # Infer R2 filename
-    my $fq2 = "${ind}_R2_001.fastq.gz";
-    die "Missing R2 file for $ind\n" unless -e $fq2;
+    # Full path to R2
+    my $fq2_path = "$raw_dir/${ind}_R2_001.fastq.gz";
+    die "Missing R2 file for $ind\n" unless -e $fq2_path;
 
-    # Run the BWA-MEM2 alignment and process with samtools, could add -K 1000000 -c 1000 to reduce mem?
-    my $cmd = "$bwa mem -M -t 1 $genome $fq1 $fq2 | $samtools view -b | $samtools sort --threads 1 > ${output_dir}/${ind}.bam";
+    # Run BWA + samtools
+    my $cmd = "$bwa mem -M -t 1 $genome $fq1_path $fq2_path | $samtools view -b | $samtools sort --threads 1 -o ${output_dir}/${ind}.bam";
     system($cmd) == 0 or die "system $cmd failed: $?";
 
     print "Alignment completed for $ind\n";
-
-    $pm->finish;  # End the child process
+    $pm->finish;
 }
 
-$pm->wait_all_children;  # Wait for all child processes to finish
-
-
+$pm->wait_all_children;
 
 
 
