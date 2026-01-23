@@ -3,9 +3,9 @@
 #SBATCH --partition=saarman-np   
 #SBATCH --account=saarman-np
 #SBATCH --time=24:00:00   # walltime limit (HH:MM:SS)
-#SBATCH --mem=32G
+#SBATCH --mem=64G
 #SBATCH --nodes=1   # number of nodes
-#SBATCH --ntasks-per-node=16   # 20 processor core(s) per node X 2 threads per core
+#SBATCH --ntasks-per-node=20   # 20 processor core(s) per node X 2 threads per core
 #SBATCH --job-name="bwamem-ref"
 #SBATCH --mail-user=emily.calhoun@usu.edu    # email address
 #SBATCH --mail-type=BEGIN
