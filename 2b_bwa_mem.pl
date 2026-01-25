@@ -45,7 +45,7 @@ foreach my $fq1 (@fq1_files) {
     die "Missing R2 file for $ind\n" unless -e $fq2_path;
 
     # Run BWA + samtools
-    my $cmd = "$bwa mem -M -t 1 $genome $fq1_path $fq2_path | $samtools view -b | $samtools sort --threads 1 -o ${output_dir}/${ind}.bam";
+    my $cmd = "$bwa mem -M -t 1 $genome $fq1_path $fq2_path | $samtools view -b | $samtools sort --threads 1 -m 8G -o ${output_dir}/${ind}.bam";
     system($cmd) == 0 or die "system $cmd failed: $?";
 
     print "Alignment completed for $ind\n";
