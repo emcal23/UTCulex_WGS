@@ -8,3 +8,20 @@
 wget -r -np -nd -A "fastq,fastq.gz" \
 ? http://fcb.ycga.yale.edu:3010/TKlineFkigyao4idvY09P1b0xrr__cg/sample_dir_000019646/
 --2025-11-21 12:31:32--  http://fcb.ycga.yale.edu:3010/TKlineFkigyao4idvY09P1b0xrr__cg/sample_dir_000019646/
+
+12/3/25
+forgot to write about running fastqc and multiqc but it was easy added to 
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/fastQC_WGS_Cx
+
+
+12/25 Conversations with Andrea and Zach about phasing and reference genomes etc. decided to use same USA Cx pipiens genome which we used for ddRAD project which exists here 
+my $genome = "/uufs/chpc.utah.edu/common/home/saarman-group1/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta";
+
+It is currently unpublished. Hopefully by the time I am ready to write they will be further along? 
+
+1/20/26
+Been working on getting bwa-mem running for these samples. Took lots of troubleshooting. 
+
+1/25/26 
+Think I finally made progress - running test files best run so far is 4 hours in right now here is slurm output file 	slurm-10681360.out, output bams will go in Cx_WGS_bwa
+
