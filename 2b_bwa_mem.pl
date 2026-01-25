@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Parallel::ForkManager;
 
-my $max = 2;  # Set the maximum number of parallel processes to 1 for testing, target is 20
+my $max = 4;  # Set the maximum number of parallel processes to 1 for testing, target is 20
 my $pm = Parallel::ForkManager->new($max);  # Create a new Parallel::ForkManager object with the specified maximum
 
 # Path to the reference genome file
@@ -40,12 +40,20 @@ foreach my $fq1 (@fq1_files) {
     $fq1 =~ m/(.+)_R1_001\.fastq\.gz$/ or die "failed match for file $fq1\n";
     my $ind = $1;
 
+    # Skip if BAM already exists
+    my $outbam = "${output_dir}/${ind}.bam";
+    if (-e $outbam) {
+        print "Skipping $ind (BAM already exists)\n";
+        $pm->finish;
+        next FILES;
+    }
+
     # Full path to R2
     my $fq2_path = "$raw_dir/${ind}_R2_001.fastq.gz";
     die "Missing R2 file for $ind\n" unless -e $fq2_path;
 
     # Run BWA + samtools
-    my $cmd = "$bwa mem -M -t 1 $genome $fq1_path $fq2_path | $samtools view -b | $samtools sort --threads 1 -m 8G -o ${output_dir}/${ind}.bam";
+    my $cmd = "$bwa mem -M -t 2 $genome $fq1_path $fq2_path | $samtools view -b | $samtools sort --threads 1 -m 8G -o ${output_dir}/${ind}.bam";
     system($cmd) == 0 or die "system $cmd failed: $?";
 
     print "Alignment completed for $ind\n";
