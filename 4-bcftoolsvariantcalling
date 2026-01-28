@@ -1,1 +1,23 @@
 
+
+
+# Generate pileup and call variants
+bcftools mpileup -f reference.fasta -b bam_list.txt -Ou \
+| bcftools call -mv -Oz -o variants.vcf.gz
+
+# Index VCF
+bcftools index variants.vcf.gz
+
+
+
+bcftools filter -s LOWQUAL -e '%QUAL<20 || DP<10' variants.vcf.gz -Oz -o variants.filtered.vcf.gz
+bcftools index variants.filtered.vcf.gz
+
+
+
+
+
+###### 
+# -m = multiallelic calling
+
+# -v = output only variant sites
