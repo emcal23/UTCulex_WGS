@@ -15,7 +15,7 @@ bwa mem to align to Cx pipiens reference and trims
   *Is it possiblle or helpful to add other references as outgroups?
 
 Step 3 - Remove PCR duplicates 
-samtools  
+samtools  index, markdups, and flagstat
 
 Step 4 — Variant calling 
 bcftools
