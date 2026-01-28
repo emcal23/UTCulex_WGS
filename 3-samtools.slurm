@@ -1,3 +1,15 @@
+Set up steps:
+# Run this once in command line before running this slurm 
+# cd /path/to/reference
+# Index FASTA for samtools
+# samtools faidx Cpip29_nodeb_gfill_mito.fasta
+
+
+# Also run this once in command line before running below in slurm
+# cd /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa
+# ls *.bam > bam_list.txt
+
+
 #!/bin/bash
 
 # job standard output will go to the file slurm-%j.out (where %j is the job ID)
@@ -16,7 +28,38 @@
 
 # Load samtools to remove PCR duplicates
 
-module load samtools/1.16
+module load samtools
 
-# Samtools FASTA index
-samtools faidx Cx_pipiens.fna
+# Directories
+BAM_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_indexed
+mkdir -p $OUT_DIR
+
+# Get BAM for this array task
+bam=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $BAM_DIR/bam_list.txt)
+sample=$(basename $bam .bam)
+
+echo "=== Processing $sample ==="
+
+# Step 1: Name sort
+samtools sort -n -@ $SLURM_CPUS_PER_TASK -o $OUT_DIR/${sample}.namesort.bam $bam
+
+# Step 2: Fix mate information (required before markdup)
+samtools fixmate -m $OUT_DIR/${sample}.namesort.bam $OUT_DIR/${sample}.fixmate.bam
+
+# Step 3: Coordinate sort
+samtools sort -@ $SLURM_CPUS_PER_TASK -o $OUT_DIR/${sample}.coordsort.bam $OUT_DIR/${sample}.fixmate.bam
+
+# Step 4: Mark duplicates
+samtools markdup -@ $SLURM_CPUS_PER_TASK $OUT_DIR/${sample}.coordsort.bam $OUT_DIR/${sample}.markdup.bam
+
+# Step 5: Index the final BAM
+samtools index $OUT_DIR/${sample}.markdup.bam
+
+# Step 6: Optional QC
+samtools flagstat $OUT_DIR/${sample}.markdup.bam > $OUT_DIR/${sample}.flagstat.txt
+
+# Cleanup intermediate BAMs to save space
+rm $OUT_DIR/${sample}.namesort.bam $OUT_DIR/${sample}.fixmate.bam $OUT_DIR/${sample}.coordsort.bam
+
+echo "=== Done $sample ==="
