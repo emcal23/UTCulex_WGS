@@ -1,53 +1,67 @@
 #!/bin/bash
 
-# job standard output will go to the file slurm-%j.out (where %j is the job ID)
-
-#SBATCH --partition=saarman-np   
+#SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=24:00:00   # walltime limit (HH:MM:SS)
+#SBATCH --time=24:00:00
 #SBATCH --mem=32G
-#SBATCH --nodes=1   # number of nodes
-#SBATCH --ntasks-per-node=16   # 20 processor core(s) per node X 2 threads per core
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --array=1-$(wc -l < /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa/bam_list.txt)
 #SBATCH --job-name="samtools"
-#SBATCH --mail-user=emily.calhoun@usu.edu    # email address
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-type=FAIL
-
-# Load samtools to remove PCR duplicates
+#SBATCH --mail-user=emily.calhoun@usu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
 
 module load samtools
 
 # Directories
 BAM_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_indexed
-mkdir -p $OUT_DIR
+mkdir -p "$OUT_DIR"
 
 # Get BAM for this array task
-bam=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $BAM_DIR/bam_list.txt)
-sample=$(basename $bam .bam)
+bam=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$BAM_DIR/bam_list.txt")
+
+# Safety check
+if [[ -z "$bam" ]]; then
+    echo "No BAM found for task ${SLURM_ARRAY_TASK_ID}"
+    exit 1
+fi
+
+sample=$(basename "$bam" .bam)
 
 echo "=== Processing $sample ==="
 
 # Step 1: Name sort
-samtools sort -n -@ $SLURM_CPUS_PER_TASK -o $OUT_DIR/${sample}.namesort.bam $bam
+samtools sort -n -@ "$SLURM_CPUS_PER_TASK" \
+    -o "$OUT_DIR/${sample}.namesort.bam" \
+    "$BAM_DIR/$bam"
 
-# Step 2: Fix mate information (required before markdup)
-samtools fixmate -m $OUT_DIR/${sample}.namesort.bam $OUT_DIR/${sample}.fixmate.bam
+# Step 2: Fix mate information
+samtools fixmate -m \
+    "$OUT_DIR/${sample}.namesort.bam" \
+    "$OUT_DIR/${sample}.fixmate.bam"
 
 # Step 3: Coordinate sort
-samtools sort -@ $SLURM_CPUS_PER_TASK -o $OUT_DIR/${sample}.coordsort.bam $OUT_DIR/${sample}.fixmate.bam
+samtools sort -@ "$SLURM_CPUS_PER_TASK" \
+    -o "$OUT_DIR/${sample}.coordsort.bam" \
+    "$OUT_DIR/${sample}.fixmate.bam"
 
 # Step 4: Mark duplicates
-samtools markdup -@ $SLURM_CPUS_PER_TASK $OUT_DIR/${sample}.coordsort.bam $OUT_DIR/${sample}.markdup.bam
+samtools markdup -@ "$SLURM_CPUS_PER_TASK" \
+    "$OUT_DIR/${sample}.coordsort.bam" \
+    "$OUT_DIR/${sample}.markdup.bam"
 
-# Step 5: Index the final BAM
-samtools index $OUT_DIR/${sample}.markdup.bam
+# Step 5: Index
+samtools index "$OUT_DIR/${sample}.markdup.bam"
 
-# Step 6: Optional QC
-samtools flagstat $OUT_DIR/${sample}.markdup.bam > $OUT_DIR/${sample}.flagstat.txt
+# Step 6: QC
+samtools flagstat \
+    "$OUT_DIR/${sample}.markdup.bam" \
+    > "$OUT_DIR/${sample}.flagstat.txt"
 
-# Cleanup intermediate BAMs to save space
-rm $OUT_DIR/${sample}.namesort.bam $OUT_DIR/${sample}.fixmate.bam $OUT_DIR/${sample}.coordsort.bam
+# Cleanup
+rm "$OUT_DIR/${sample}.namesort.bam" \
+   "$OUT_DIR/${sample}.fixmate.bam" \
+   "$OUT_DIR/${sample}.coordsort.bam"
 
 echo "=== Done $sample ==="
