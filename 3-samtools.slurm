@@ -1,15 +1,3 @@
-Set up steps:
-# Run this once in command line before running this slurm 
-# cd /path/to/reference
-# Index FASTA for samtools
-# samtools faidx Cpip29_nodeb_gfill_mito.fasta
-
-
-# Also run this once in command line before running below in slurm
-# cd /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa
-# ls *.bam > bam_list.txt
-
-
 #!/bin/bash
 
 # job standard output will go to the file slurm-%j.out (where %j is the job ID)
@@ -20,7 +8,7 @@ Set up steps:
 #SBATCH --mem=32G
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --ntasks-per-node=16   # 20 processor core(s) per node X 2 threads per core
-#SBATCH --job-name="bwa-ref"
+#SBATCH --job-name="samtools"
 #SBATCH --mail-user=emily.calhoun@usu.edu    # email address
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
