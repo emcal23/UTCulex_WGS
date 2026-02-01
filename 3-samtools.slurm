@@ -6,7 +6,7 @@
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=16
-#SBATCH --array=1-$(wc -l < /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_bwa/bam_list.txt)
+#SBATCH --array=1-99
 #SBATCH --job-name="samtools"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
