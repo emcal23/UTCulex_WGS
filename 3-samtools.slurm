@@ -46,7 +46,7 @@ samtools sort -@ "$SLURM_CPUS_PER_TASK" \
     -o "$OUT_DIR/${sample}.coordsort.bam" \
     "$OUT_DIR/${sample}.fixmate.bam"
 
-# Step 4: Mark duplicates
+# Step 4: Mark duplicates but do not remove
 samtools markdup -@ "$SLURM_CPUS_PER_TASK" \
     "$OUT_DIR/${sample}.coordsort.bam" \
     "$OUT_DIR/${sample}.markdup.bam"
