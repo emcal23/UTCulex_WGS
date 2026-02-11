@@ -20,25 +20,28 @@ for filename in sorted(os.listdir(bam_dir)):
         
         print(f"Processing {sample}...")
         
-        # Run samtools coverage
+        # Run samtools coverage (Python 3.6 compatible)
         try:
-            result = subprocess.run(
+            result = subprocess.Popen(
                 ['samtools', 'coverage', filepath],
-                capture_output=True,
-                text=True,
-                check=True
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True
             )
+            stdout, stderr = result.communicate()
+            
+            if result.returncode != 0:
+                print(f"Error processing {sample}: {stderr}")
+                results.append((sample, 0))
+                continue
             
             # Parse output to get weighted mean coverage
             total_bases = 0
             total_depth = 0
             
-            for line in result.stdout.strip().split('\n')[1:]:  # Skip header
+            for line in stdout.strip().split('\n')[1:]:  # Skip header
                 fields = line.split('\t')
                 if len(fields) >= 7:
-                    numreads = int(fields[3])
-                    covbases = int(fields[4])
-                    coverage = float(fields[5])
                     meandepth = float(fields[6])
                     endpos = int(fields[2])
                     startpos = int(fields[1])
@@ -50,7 +53,7 @@ for filename in sorted(os.listdir(bam_dir)):
             mean_depth = total_depth / total_bases if total_bases > 0 else 0
             results.append((sample, mean_depth))
             
-        except subprocess.CalledProcessError as e:
+        except Exception as e:
             print(f"Error processing {sample}: {e}")
             results.append((sample, 0))
 
@@ -63,6 +66,8 @@ with open(output_file, 'w') as out:
         out.write(f"{sample:<35} {depth:>12.2f}x\n")
 
 print(f"\nCoverage summary created: {output_file}")
-print("\nShowing results:")
+print("\nShowing first 15 results:")
 with open(output_file, 'r') as f:
-    print(f.read())
+    for i, line in enumerate(f):
+        if i < 17:
+            print(line.rstrip())
