@@ -25,3 +25,10 @@ Been working on getting bwa-mem running for these samples. Took lots of troubles
 1/25/26 
 Think I finally made progress - running test files best run so far is 4 hours in right now here is slurm output file 	slurm-10681360.out, output bams will go in Cx_WGS_bwa
 
+2/10/26 
+Successfully ran steps 3! Made a summary file of all the flagstats in python. Duplicates are marked and look within normal range. Don't actually have to remove them can just use:
+bcftools mpileup with the --skip-duplicates flag (or -d for short)
+This tells bcftools to ignore reads with the duplicate flag during variant calling
+
+
+2/11/26
