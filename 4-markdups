@@ -1,0 +1,74 @@
+#!/bin/bash
+#SBATCH --partition=saarman-np
+#SBATCH --account=saarman-np
+#SBATCH --time=300:00:00
+#SBATCH --mem=32G
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --array=1-80  # UPDATE THIS NUMBER after running script 3!
+#SBATCH --job-name="markdup"
+#SBATCH --mail-user=emily.calhoun@usu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+
+module load samtools
+
+# Directories - NOW using the MERGED BAMs!
+BAM_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_merged
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_final
+
+mkdir -p "$OUT_DIR"
+
+# Get BAM for this array task
+bam=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$BAM_DIR/mergedbam_list.txt")
+
+# Safety check
+if [[ -z "$bam" ]]; then
+    echo "No BAM found for task ${SLURM_ARRAY_TASK_ID}"
+    exit 1
+fi
+
+sample=$(basename "$bam" .bam)
+
+echo "=== Processing $sample ==="
+
+# Step 1: Name sort
+echo "  Step 1/6: Name sorting..."
+samtools sort -n -@ "$SLURM_CPUS_PER_TASK" \
+    -o "$OUT_DIR/${sample}.namesort.bam" \
+    "$BAM_DIR/$bam"
+
+# Step 2: Fix mate information
+echo "  Step 2/6: Fixing mate pairs..."
+samtools fixmate -m \
+    "$OUT_DIR/${sample}.namesort.bam" \
+    "$OUT_DIR/${sample}.fixmate.bam"
+
+# Step 3: Coordinate sort
+echo "  Step 3/6: Coordinate sorting..."
+samtools sort -@ "$SLURM_CPUS_PER_TASK" \
+    -o "$OUT_DIR/${sample}.coordsort.bam" \
+    "$OUT_DIR/${sample}.fixmate.bam"
+
+# Step 4: Mark duplicates (but do NOT remove them)
+echo "  Step 4/6: Marking duplicates..."
+samtools markdup -@ "$SLURM_CPUS_PER_TASK" \
+    "$OUT_DIR/${sample}.coordsort.bam" \
+    "$OUT_DIR/${sample}.markdup.bam"
+
+# Step 5: Index
+echo "  Step 5/6: Indexing..."
+samtools index "$OUT_DIR/${sample}.markdup.bam"
+
+# Step 6: QC
+echo "  Step 6/6: Running flagstat QC..."
+samtools flagstat \
+    "$OUT_DIR/${sample}.markdup.bam" \
+    > "$OUT_DIR/${sample}.flagstat.txt"
+
+# Cleanup intermediate files
+echo "  Cleaning up intermediate files..."
+rm "$OUT_DIR/${sample}.namesort.bam" \
+   "$OUT_DIR/${sample}.fixmate.bam" \
+   "$OUT_DIR/${sample}.coordsort.bam"
+
+echo "=== Done with $sample ==="
