@@ -16,3 +16,7 @@
 
 bcftools mpileup --skip-duplicates -f reference.fasta sample.markdup.bam | \
 bcftools call -mv -Oz -o sample.vcf.gz
+
+
+bcftools mpileup --skip-duplicates -f reference.fasta sample.markdup.bam | \
+bcftools call -mv -Oz -o sample.vcf.gz
