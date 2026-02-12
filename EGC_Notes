@@ -32,3 +32,52 @@ This tells bcftools to ignore reads with the duplicate flag during variant calli
 
 
 2/11/26
+Realized it probably makes sense to merge files of same sample from different lanes .... changed step 3 to a merge scripts then will rerun samtools step for markdups
+checking bam list 
+
+All BAM files: 99 (with duplicate lanes)
+Merged BAMs: 65 (unique biological samples)
+Difference: 99 - 65 = 34 extra files
+This means 34 samples had multiple lanes that got merged together.
+
+Let me count the duplicates from your list to verify:
+Samples with 2 lanes (pairs):
+
+BE_202_179_014 (L001 + L004)
+BE_203_167_026 (L001 + L004)
+BE_204_155_038 (L004 + L001)
+Cache_121_131_062 (L001 + L004)
+Cache_122_119_074 (L001 + L004)
+Cache_123_107_086 (L001 + L004)
+OGD_802_178_015 (L004 + L001)
+OGD_805_166_027 (L004 + L001)
+OGD_806_154_039 (L004 + L001)
+OGD_807_142_051 (L004 + L001)
+OGD_809_130_063 (L004 + L001)
+SGE_010_118_075 (L004 + L001)
+SGE_015_177_016 (L004 + L001)
+SLC_053_141_052 (L004 + L001)
+SLC_074_129_064 (L004 + L001)
+SLC_263_105_088 (L004 + L001)
+SLC_372_188_005 (L004 + L001)
+SLC_379_128_065 (L004 + L001)
+SLC_380_116_077 (L004 + L001)
+SLC_523_104_089 (L004 + L001)
+UTCO_103_175_018 (L004 + L001)
+UTCO_104_163_030 (L004 + L001)
+UTCO_112_139_054 (L004 + L001)
+UTCO_117_127_066 (L004 + L001)
+UTCO_119_103_090 (L004 + L001)
+UTCO_122_174_019 (L004 + L001)
+UTCO_123_161_032 (L008 + L001)
+UTCO_124_149_044 (L008 + L001)
+UTCO_125_138_055 (L004 + L001)
+UTCO_132_137_056 (L008 + L001)
+UTCO_134_113_080 (L008 + L001)
+UTCO_136_185_008 (L004 + L001)
+WMAD_005_125_068 (L008 + L001)
+WMAD_011_161_032 (L004 + L001)
+
+
+2/12/26
+Updated array and running step 4 samtools markdups again
