@@ -5,8 +5,8 @@ import subprocess
 import re
 
 # Directory with BAM files
-bam_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_indexed"
-output_file = os.path.join(bam_dir, "coverage_summary.txt")
+bam_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_final"
+output_file = os.path.join(bam_dir, "mergedcoverage_summary.txt")
 
 print("Calculating coverage for all samples (this may take a few minutes)...")
 
