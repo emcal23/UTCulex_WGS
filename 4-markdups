@@ -5,7 +5,7 @@
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=16
-#SBATCH --array=1-80  # UPDATE THIS NUMBER after running script 3!
+#SBATCH --array=1-65  # UPDATED THIS NUMBER after running script 3!
 #SBATCH --job-name="markdup"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
