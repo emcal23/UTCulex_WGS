@@ -4,10 +4,10 @@ import os
 import re
 
 # Directory with flagstat files
-flagstat_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_indexed"
+flagstat_dir = "/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_final"
 
 # Output file
-output_file = os.path.join(flagstat_dir, "flagstat_summary_clean.txt")
+output_file = os.path.join(flagstat_dir, "mergedflagstat_summary_clean.txt")
 
 # Open output file
 with open(output_file, 'w') as out:
