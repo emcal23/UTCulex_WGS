@@ -78,6 +78,11 @@ UTCO_136_185_008 (L004 + L001)
 WMAD_005_125_068 (L008 + L001)
 WMAD_011_161_032 (L004 + L001)
 
-
 2/12/26
 Updated array and running step 4 samtools markdups again
+
+
+2/13/26
+running tables to investigate read depth and pcr dups to determine what to use for bcf filters 
+
+
