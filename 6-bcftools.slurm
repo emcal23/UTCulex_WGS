@@ -34,15 +34,16 @@ bcftools mpileup \
     --threads "$SLURM_CPUS_PER_TASK" \
     -f "$REF" \
     -b "$BAM_DIR/bam_list_for_calling.txt" \
-    -a FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR \
+    -a FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR,INFO/SCR \
     -O u | \
 bcftools call \
     -m \
     -v \
     --threads "$SLURM_CPUS_PER_TASK" \
+    -a INFO/SCR \
     -O u | \
 bcftools filter \
-    -i 'INFO/DP >= 2 && (INFO/RPB > -2 && INFO/RPB < 2 || INFO/RPB == ".") && (INFO/MQB > -2 && INFO/MQB < 2 || INFO/MQB == ".") && (INFO/BQB > -2 && INFO/BQB < 2 || INFO/BQB == ".")' \
+    -i 'INFO/DP >= 2' \
     -O z \
     -o "$OUT_DIR/Culex_raw_variants.vcf.gz"
 
@@ -59,14 +60,13 @@ bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of SNPs:"
 bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of samples:"
 
 echo ""
-echo "Filters applied:"
+echo "Filters applied during calling:"
 echo "  - Duplicates skipped (default: --ns UNMAP,SECONDARY,QCFAIL,DUP)"
 echo "  - Min mapping quality: 30 (-q 30)"
-echo "  - Min base quality: 30 (-Q 30)"
-echo "  - Max depth: 100 (-d 100)"
-echo "  - Min mean depth: 2x (INFO/DP >= 2)"
-echo "  - Read Position Bias Z-score: -2 to 2 (RPB)"
-echo "  - Mapping Quality Bias Z-score: -2 to 2 (MQB)"
-echo "  - Base Quality Bias Z-score: -2 to 2 (BQB)"
+echo "  - Min base quality: 30 (-Q 30)"  
+echo "  - Max depth per file: 100 (-d 100)"
+echo "  - Min mean depth across samples: 2x (INFO/DP >= 2)"
 echo ""
-echo "Next: Apply Stage 2 filters (missingness, MAC, etc.)"
+echo "Note: RPB, MQB, BQB bias statistics require newer bcftools or different annotation flags."
+
+echo "Next: Apply Stage 2 filters (missingness, MAC, allele balance, etc.)"
