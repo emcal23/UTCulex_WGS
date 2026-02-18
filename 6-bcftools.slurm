@@ -46,8 +46,7 @@ bcftools call \
     --threads "$SLURM_CPUS_PER_TASK" \
     --output-type z \
     --output "$OUT_DIR/Culex_raw_variants.vcf.gz"
-bcftools filter \
-    --
+
 
 # Index the VCF
 bcftools index "$OUT_DIR/Culex_raw_variants.vcf.gz"
