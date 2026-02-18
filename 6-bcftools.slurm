@@ -22,28 +22,22 @@ mkdir -p "$OUT_DIR"
 # Create BAM list with full paths
 ls "$BAM_DIR"/*.markdup.bam > "$BAM_DIR/bam_list_for_calling.txt"
 
-echo "=== Starting variant calling ==="
+echo "=== Starting MINIMAL variant calling ==="
 echo "Number of samples: $(cat $BAM_DIR/bam_list_for_calling.txt | wc -l)"
 echo "Reference: $REF"
+echo "bcftools version: $(bcftools --version | head -1)"
 
-# Call variants across ALL samples
+# MINIMAL variant calling - NO fancy annotations
 bcftools mpileup \
     -q 30 \
     -Q 30 \
     -d 100 \
-    --threads "$SLURM_CPUS_PER_TASK" \
     -f "$REF" \
     -b "$BAM_DIR/bam_list_for_calling.txt" \
-    -a FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR,INFO/SCR \
     -O u | \
 bcftools call \
     -m \
     -v \
-    --threads "$SLURM_CPUS_PER_TASK" \
-    -a INFO/SCR \
-    -O u | \
-bcftools filter \
-    -i 'INFO/DP >= 2' \
     -O z \
     -o "$OUT_DIR/Culex_raw_variants.vcf.gz"
 
@@ -55,18 +49,22 @@ echo ""
 echo "=== Variant calling complete ==="
 echo "Raw VCF: $OUT_DIR/Culex_raw_variants.vcf.gz"
 echo ""
-echo "Quick stats:"
 bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of SNPs:"
 bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of samples:"
 
 echo ""
-echo "Filters applied during calling:"
-echo "  - Duplicates skipped (default: --ns UNMAP,SECONDARY,QCFAIL,DUP)"
-echo "  - Min mapping quality: 30 (-q 30)"
-echo "  - Min base quality: 30 (-Q 30)"  
-echo "  - Max depth per file: 100 (-d 100)"
-echo "  - Min mean depth across samples: 2x (INFO/DP >= 2)"
+echo "=========================================="
+echo "FILTERS APPLIED:"
+echo "  - Min mapping quality: 30"
+echo "  - Min base quality: 30"
+echo "  - Max depth: 100"
+echo "  - Duplicates: skipped (default)"
 echo ""
-echo "Note: RPB, MQB, BQB bias statistics require newer bcftools or different annotation flags."
-
-echo "Next: Apply Stage 2 filters (missingness, MAC, allele balance, etc.)"
+echo "NEXT STEPS:"
+echo "  1. This is a basic raw VCF"
+echo "  2. Apply Stage 2 filters with your advisor:"
+echo "     - Depth filter (DP >= 2x mean)"
+echo "     - Missingness filter"
+echo "     - MAC filter"
+echo "     - Bias filters (if possible)"
+echo "=========================================="
