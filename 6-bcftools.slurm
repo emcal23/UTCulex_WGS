@@ -27,11 +27,10 @@ echo "Number of samples: $(cat $BAM_DIR/bam_list_for_calling.txt | wc -l)"
 echo "Reference: $REF"
 
 # Call variants across ALL samples
-bcftools mpileup \
+bcftools mpileup --skip-duplicates \
     --min-BQ 30 \
     --min-MQ 30 \
     --max-depth 100 \
-    --skip-duplicates \
     --threads "$SLURM_CPUS_PER_TASK" \
     --fasta-ref "$REF" \
     --bam-list "$BAM_DIR/bam_list_for_calling.txt" \
