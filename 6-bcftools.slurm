@@ -1,16 +1,13 @@
 #!/bin/bash
-
-#SBATCH --partition=saarman-np   
+#SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=72:00:00   # walltime limit 336 (HH:MM:SS)
-#SBATCH --mem=64G
-#SBATCH --nodes=1   # number of nodes
-#SBATCH --ntasks-per-node=20   # 20 processor core(s) per node X 2 threads per core
-#SBATCH --job-name="bcftools-variantcalling"
-#SBATCH --mail-user=emily.calhoun@usu.edu    # email address
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-type=FAIL
+#SBATCH --time=48:00:00
+#SBATCH --mem=32G
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --job-name="variant_call"
+#SBATCH --mail-user=emily.calhoun@usu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
 
 module load samtools
 module load bcftools
@@ -38,15 +35,17 @@ bcftools mpileup \
     --threads "$SLURM_CPUS_PER_TASK" \
     --fasta-ref "$REF" \
     --bam-list "$BAM_DIR/bam_list_for_calling.txt" \
-    --annotate FORMAT/AD,FORMAT/DP \
+    --annotate FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR \
     --output-type u | \
 bcftools call \
     --multiallelic-caller \
     --variants-only \
     --threads "$SLURM_CPUS_PER_TASK" \
+    --output-type u | \
+bcftools filter \
+    --include 'INFO/DP >= 2 && (INFO/RPB > -2 && INFO/RPB < 2 || INFO/RPB == ".") && (INFO/MQB > -2 && INFO/MQB < 2 || INFO/MQB == ".") && (INFO/BQB > -2 && INFO/BQB < 2 || INFO/BQB == ".")' \
     --output-type z \
     --output "$OUT_DIR/Culex_raw_variants.vcf.gz"
-
 
 # Index the VCF
 bcftools index "$OUT_DIR/Culex_raw_variants.vcf.gz"
@@ -61,4 +60,11 @@ bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of SNPs:"
 bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of samples:"
 
 echo ""
-echo "Next: Wait for advisor's guidance on Stage 2 filtering (missingness, MAC, AB)"
+echo "Filters applied:"
+echo "  - Min mean depth: 2x (INFO/DP >= 2)"
+echo "  - Read Position Bias Z-score: -2 to 2 (RPB)"
+echo "  - Mapping Quality Bias Z-score: -2 to 2 (MQB)"
+echo "  - Base Quality Bias Z-score: -2 to 2 (BQB)"
+echo ""
+echo "Next: Apply Stage 2 filters (missingness, MAC, etc.)"
+
