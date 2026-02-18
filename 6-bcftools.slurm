@@ -31,8 +31,8 @@ echo "Reference: $REF"
 
 # Call variants across ALL samples
 bcftools mpileup \
-    --min-BQ 20 \
-    --min-MQ 20 \
+    --min-BQ 30 \
+    --min-MQ 30 \
     --max-depth 100 \
     --skip-duplicates \
     --threads "$SLURM_CPUS_PER_TASK" \
@@ -46,6 +46,8 @@ bcftools call \
     --threads "$SLURM_CPUS_PER_TASK" \
     --output-type z \
     --output "$OUT_DIR/Culex_raw_variants.vcf.gz"
+bcftools filter \
+    --
 
 # Index the VCF
 bcftools index "$OUT_DIR/Culex_raw_variants.vcf.gz"
