@@ -28,24 +28,23 @@ echo "Reference: $REF"
 
 # Call variants across ALL samples
 bcftools mpileup \
-    --min-BQ 30 \
-    --min-MQ 30 \
-    --max-depth 100 \
-    --excl-flags DUP \
+    -q 30 \
+    -Q 30 \
+    -d 100 \
     --threads "$SLURM_CPUS_PER_TASK" \
-    --fasta-ref "$REF" \
-    --bam-list "$BAM_DIR/bam_list_for_calling.txt" \
-    --annotate FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR \
-    --output-type u | \
+    -f "$REF" \
+    -b "$BAM_DIR/bam_list_for_calling.txt" \
+    -a FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR \
+    -O u | \
 bcftools call \
-    --multiallelic-caller \
-    --variants-only \
+    -m \
+    -v \
     --threads "$SLURM_CPUS_PER_TASK" \
-    --output-type u | \
+    -O u | \
 bcftools filter \
-    --include 'INFO/DP >= 2 && (INFO/RPB > -2 && INFO/RPB < 2 || INFO/RPB == ".") && (INFO/MQB > -2 && INFO/MQB < 2 || INFO/MQB == ".") && (INFO/BQB > -2 && INFO/BQB < 2 || INFO/BQB == ".")' \
-    --output-type z \
-    --output "$OUT_DIR/Culex_raw_variants.vcf.gz"
+    -i 'INFO/DP >= 2 && (INFO/RPB > -2 && INFO/RPB < 2 || INFO/RPB == ".") && (INFO/MQB > -2 && INFO/MQB < 2 || INFO/MQB == ".") && (INFO/BQB > -2 && INFO/BQB < 2 || INFO/BQB == ".")' \
+    -O z \
+    -o "$OUT_DIR/Culex_raw_variants.vcf.gz"
 
 # Index the VCF
 bcftools index "$OUT_DIR/Culex_raw_variants.vcf.gz"
@@ -61,7 +60,10 @@ bcftools stats "$OUT_DIR/Culex_raw_variants.vcf.gz" | grep "number of samples:"
 
 echo ""
 echo "Filters applied:"
-echo "  - Skip dups / Excluded duplicate-flagged reads (--excl-flags DUP)"
+echo "  - Duplicates skipped (default: --ns UNMAP,SECONDARY,QCFAIL,DUP)"
+echo "  - Min mapping quality: 30 (-q 30)"
+echo "  - Min base quality: 30 (-Q 30)"
+echo "  - Max depth: 100 (-d 100)"
 echo "  - Min mean depth: 2x (INFO/DP >= 2)"
 echo "  - Read Position Bias Z-score: -2 to 2 (RPB)"
 echo "  - Mapping Quality Bias Z-score: -2 to 2 (MQB)"
