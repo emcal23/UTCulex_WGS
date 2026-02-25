@@ -5,7 +5,7 @@
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=16
-#SBATCH --job-name="variant_calling"
+#SBATCH --job-name="variant_call_final"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
@@ -22,13 +22,13 @@ mkdir -p "$OUT_DIR"
 # Create BAM list with full paths
 ls "$BAM_DIR"/*.markdup.bam > "$BAM_DIR/bam_list_for_calling.txt"
 
-echo "=== Starting variant calling with bcftools 1.23 ==="
+echo "=== Starting variant calling ==="
 echo "Number of samples: $(cat $BAM_DIR/bam_list_for_calling.txt | wc -l)"
 echo "Reference: $REF"
 echo "bcftools version: $(bcftools --version | head -1)"
 echo "Start time: $(date)"
 
-# Call variants with advisor's recommended filters
+# Simple variant calling that WORKS
 bcftools mpileup \
     --min-BQ 30 \
     --min-MQ 30 \
@@ -36,22 +36,18 @@ bcftools mpileup \
     --threads "$SLURM_CPUS_PER_TASK" \
     --fasta-ref "$REF" \
     --bam-list "$BAM_DIR/bam_list_for_calling.txt" \
-    --annotate FORMAT/AD,FORMAT/DP,INFO/AD,INFO/ADF,INFO/ADR \
+    --annotate FORMAT/AD,FORMAT/DP \
     --output-type u | \
 bcftools call \
     --multiallelic-caller \
     --variants-only \
     --threads "$SLURM_CPUS_PER_TASK" \
-    --output-type u | \
-bcftools filter \
-    --include 'INFO/DP >= 130 && (INFO/RPB > -2 && INFO/RPB < 2 || INFO/RPB == ".") && (INFO/MQB > -2 && INFO/MQB < 2 || INFO/MQB == ".") && (INFO/BQB > -2 && INFO/BQB < 2 || INFO/BQB == ".")' \
     --output-type z \
     --output "$OUT_DIR/Culex_final_variants.vcf.gz"
 
 # Index the VCF
 bcftools index "$OUT_DIR/Culex_final_variants.vcf.gz"
 
-# Quick stats
 echo ""
 echo "=== Variant calling complete ==="
 echo "End time: $(date)"
@@ -62,15 +58,15 @@ bcftools stats "$OUT_DIR/Culex_final_variants.vcf.gz" | grep "number of samples:
 
 echo ""
 echo "=========================================="
-echo "FILTERS APPLIED:"
-echo "  - Min mapping quality: 30 (--min-MQ 30)"
-echo "  - Min base quality: 30 (--min-BQ 30)"
-echo "  - Max depth: 100 (--max-depth 100)"
-echo "  - Duplicates: skipped (default behavior)"
-echo "  - Min mean depth: 130x (~2x per sample)"
-echo "  - Read Position Bias Z-score: -2 to 2 (RPB)"
-echo "  - Mapping Quality Bias Z-score: -2 to 2 (MQB)"
-echo "  - Base Quality Bias Z-score: -2 to 2 (BQB)"
+echo "STAGE 1 FILTERS APPLIED:"
+echo "  - Min mapping quality: 30"
+echo "  - Min base quality: 30"
+echo "  - Max depth: 100"
+echo "  - Duplicates: skipped (default)"
 echo ""
-echo "Next: Stage 2 filters (missingness, MAC, etc.) and merge with ddRAD data"
+echo "STAGE 2 FILTERS (to apply next with advisor):"
+echo "  - Min mean depth: ~130x (2x per sample)"
+echo "  - Missingness filter"
+echo "  - MAC filter"
+echo "  - Bias filters (RPB/MQB/BQB using vcftools or GATK)"
 echo "=========================================="
