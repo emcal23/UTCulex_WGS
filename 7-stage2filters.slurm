@@ -35,20 +35,20 @@ gatk VariantFiltration \
     -O ${OUT_DIR}/temp_gatk_filtered.vcf.gz \
     --filter-name "bqbz" --filter-expression "BQBZ > 3.0 || BQBZ < -3.0" \
     --filter-name "mqbz" --filter-expression "MQBZ > 3.0 || MQBZ < -3.0" \
-    --filter-name "rpbz" --filter-expression "RPBZ > 3.0 || RPBZ < -3.0" \
-    --filter-name "depth" --filter-expression "DP < 130" \
-    --filter-name "mapping" --filter-expression "MQ < 30"
+    --filter-name "rpbz" --filter-expression "RPBZ > 3.0 || RPBZ < -3.0" 
+#   --filter-name "depth" --filter-expression "DP < 130" \
+#    --filter-name "mapping" --filter-expression "MQ < 30"
 
 # Step 3: Keep only PASS variants (remove filtered ones)
 echo "Step 3: Extracting PASS variants..."
 bcftools view -f PASS ${OUT_DIR}/temp_gatk_filtered.vcf.gz -O z -o ${OUT_DIR}/temp_gatk_pass.vcf.gz
 
 # Step 4: vcftools for missingness and MAC
-echo "Step 4: Applying missingness and MAC filters..."
-vcftools --gzvcf ${OUT_DIR}/temp_gatk_pass.vcf.gz \
-    --max-missing 0.8 \
-    --mac 2 \
-    --recode --stdout | bgzip > ${OUT_DIR}/Culex_stage2_filtered.vcf.gz
+# echo "Step 4: Applying missingness and MAC filters..."
+# vcftools --gzvcf ${OUT_DIR}/temp_gatk_pass.vcf.gz \
+#    --max-missing 0.8 \
+#    --mac 2 \
+#    --recode --stdout | bgzip > ${OUT_DIR}/Culex_stage2_filtered.vcf.gz
 
 # Index final file
 bcftools index ${OUT_DIR}/Culex_stage2_filtered.vcf.gz
