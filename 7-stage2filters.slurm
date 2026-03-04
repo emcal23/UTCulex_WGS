@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=48:00:00
+#SBATCH --time=60:00:00
 #SBATCH --mem=16G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
@@ -12,6 +12,7 @@
 module load gatk
 module load samtools
 module load bcftools
+module load htslib  # Provides bgzip and tabix
 
 VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_final_variants.vcf.gz
 REF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta
@@ -21,10 +22,22 @@ echo "=== Stage 2: Bias Filtering Only ==="
 echo "Input: $VCF_IN"
 echo "Start time: $(date)"
 
+# Create reference dictionary if it doesn't exist
+if [ ! -f "${REF%.fasta}.dict" ] && [ ! -f "${REF}.dict" ]; then
+    echo "Creating reference dictionary for GATK..."
+    gatk CreateSequenceDictionary -R $REF
+fi
+
+# Create fai index if it doesn't exist
+if [ ! -f "${REF}.fai" ]; then
+    echo "Creating reference index..."
+    samtools faidx $REF
+fi
+
 # Recompress for GATK
 echo "Recompressing VCF for GATK..."
 gunzip -c $VCF_IN | bgzip > ${OUT_DIR}/temp_recompressed.vcf.gz
-tabix ${OUT_DIR}/temp_recompressed.vcf.gz
+tabix -p vcf ${OUT_DIR}/temp_recompressed.vcf.gz
 
 # GATK VariantFiltration - ONLY bias filters
 echo "Running GATK VariantFiltration (bias Z-scores only)..."
@@ -45,6 +58,7 @@ bcftools view -f PASS ${OUT_DIR}/temp_gatk_filtered.vcf.gz \
 bcftools index ${OUT_DIR}/Culex_stage2_bias_filtered.vcf.gz
 
 # Cleanup
+echo "Cleaning up temporary files..."
 rm ${OUT_DIR}/temp_*.vcf.gz*
 
 echo ""
@@ -69,7 +83,7 @@ echo "  - Base quality bias Z-score: |Z| ≤ 3"
 echo "  - Mapping quality bias Z-score: |Z| ≤ 3"
 echo "  - Read position bias Z-score: |Z| ≤ 3"
 echo ""
-echo "NOT YET APPLIED (for Stage 3 forked with ddRAD):"
+echo "NOT YET APPLIED (for Stage 3):"
 echo "  - Missingness filters"
 echo "  - MAC filters"
 echo "  - Location-specific filters"
