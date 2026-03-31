@@ -9,12 +9,14 @@
 
 module load bcftools
 
+VCF_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
+
 echo "Counting SNPs in Stage 1 VCF..."
-bcftools view -H Culex_final_variants.vcf.gz | wc -l
+bcftools view -H ${VCF_DIR}/Culex_final_variants.vcf.gz | wc -l
 
 echo ""
 echo "Counting SNPs in Stage 2 VCF..."
-bcftools view -H Culex_stage2_bias_filtered.vcf.gz | wc -l
+bcftools view -H ${VCF_DIR}/Culex_stage2_bias_filtered.vcf.gz | wc -l
 
 echo ""
 echo "Done!"
