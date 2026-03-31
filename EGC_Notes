@@ -85,4 +85,20 @@ Updated array and running step 4 samtools markdups again
 2/13/26
 running tables to investigate read depth and pcr dups to determine what to use for bcf filters 
 
+3/31/26
+have 2 vcf files from stage 1 QC filter and stage 2 GATK filter i adapted form Zachs code.
 
+SNP Count Summary:
+Stage 1 (raw): 72,611,536 SNPs
+Stage 2 (bias filtered): 40,670,398 SNPs
+Removed: 31,941,138 SNPs
+Percentage removed: ~44%
+
+Next steps:
+Fork A: Extract ~12 samples for ddRAD merge
+
+Which SLC samples do you want?
+Which sample is pure quinquefasciatus?
+Which sample is pure pipiens?
+
+Fork B: Continue filtering all 65 for WGS-only analysis
