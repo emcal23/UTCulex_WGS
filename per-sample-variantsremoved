@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=2:00:00
-#SBATCH --mem=8G
+#SBATCH --time=4:00:00
+#SBATCH --mem=16G
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=4
-#SBATCH --job-name="per_sample_stats"
+#SBATCH --cpus-per-task=8
+#SBATCH --job-name="sample_stats_fast"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
@@ -14,36 +14,45 @@ module load bcftools
 VCF_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
 
-echo "Calculating per-sample variant counts..."
+echo "=== Calculating per-sample stats (fast method) ==="
 
-# Stage 1 per-sample counts
-echo "Sample,Stage1_variants,Stage2_variants,Removed,Percent_removed" > ${OUT_DIR}/per_sample_filtering.csv
+# Stage 1 stats
+echo "Stage 1 stats..."
+bcftools stats -s - ${VCF_DIR}/Culex_final_variants.vcf.gz > ${OUT_DIR}/stage1_stats.txt
 
-for sample in $(bcftools query -l ${VCF_DIR}/Culex_final_variants.vcf.gz); do
-    # Clean sample name (remove path if present)
+# Stage 2 stats
+echo "Stage 2 stats..."
+bcftools stats -s - ${VCF_DIR}/Culex_stage2_bias_filtered.vcf.gz > ${OUT_DIR}/stage2_stats.txt
+
+echo ""
+echo "=== Processing results ==="
+
+# Extract per-sample SNP counts and create comparison table
+echo "Sample,Stage1_SNPs,Stage2_SNPs,Removed,Percent_Removed" > ${OUT_DIR}/per_sample_comparison.csv
+
+# Get sample names
+bcftools query -l ${VCF_DIR}/Culex_final_variants.vcf.gz | while read sample; do
     clean_name=$(basename $sample .markdup.bam)
     
-    # Count variants in Stage 1 for this sample (sites where sample has data)
-    stage1=$(bcftools view -s $sample ${VCF_DIR}/Culex_final_variants.vcf.gz | \
-             bcftools view -H -i 'GT!="mis"' | wc -l)
+    # Extract counts from stats files
+    stage1=$(grep "^PSC" ${OUT_DIR}/stage1_stats.txt | grep -w "$sample" | cut -f4)
+    stage2=$(grep "^PSC" ${OUT_DIR}/stage2_stats.txt | grep -w "$sample" | cut -f4)
     
-    # Count variants in Stage 2 for this sample
-    stage2=$(bcftools view -s $sample ${VCF_DIR}/Culex_stage2_bias_filtered.vcf.gz | \
-             bcftools view -H -i 'GT!="mis"' | wc -l)
-    
-    # Calculate removed and percentage
-    removed=$((stage1 - stage2))
-    if [ $stage1 -gt 0 ]; then
+    if [ ! -z "$stage1" ] && [ ! -z "$stage2" ]; then
+        removed=$((stage1 - stage2))
         percent=$(awk "BEGIN {printf \"%.2f\", ($removed/$stage1)*100}")
-    else
-        percent=0
+        echo "$clean_name,$stage1,$stage2,$removed,$percent"
     fi
-    
-    echo "$clean_name,$stage1,$stage2,$removed,$percent"
-done >> ${OUT_DIR}/per_sample_filtering.csv
+done >> ${OUT_DIR}/per_sample_comparison.csv
 
 echo ""
-echo "Per-sample filtering stats saved to: ${OUT_DIR}/per_sample_filtering.csv"
+echo "=== Complete! ==="
+echo "Results saved to:"
+echo "  ${OUT_DIR}/per_sample_comparison.csv"
 echo ""
-echo "Samples with highest filtering (top 10):"
-sort -t',' -k5 -rn ${OUT_DIR}/per_sample_filtering.csv | head -11
+echo "Top 10 most filtered samples:"
+sort -t',' -k5 -rn ${OUT_DIR}/per_sample_comparison.csv | head -11
+
+echo ""
+echo "Top 10 least filtered samples:"
+sort -t',' -k5 -n ${OUT_DIR}/per_sample_comparison.csv | tail -10
