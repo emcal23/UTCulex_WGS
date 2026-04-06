@@ -1,0 +1,70 @@
+#!/bin/bash
+#SBATCH --partition=saarman-np
+#SBATCH --account=saarman-np
+#SBATCH --time=4:00:00
+#SBATCH --mem=8G
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --job-name="extract_22samples"
+#SBATCH --mail-user=emily.calhoun@usu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+
+module load bcftools
+
+VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_stage2_bias_filtered.vcf.gz
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
+
+echo "=== Extracting 22 samples for ddRAD merge ==="
+echo "Start time: $(date)"
+
+# Create sample list file
+cat > ${OUT_DIR}/samples_for_ddRAD.txt << EOF
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/BE_204_155_038.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/BE_203_167_026.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/Cache_122_119_074.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/Cache_120_143_050.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/OGD_802_178_015.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SGE_015_177_016.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SGE_016_165_028.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SGE_017_153_040.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SGE_010_118_075.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SGE_012_189_004.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_074_129_064.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_372_188_005.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_379_128_065.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_380_116_077.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_523_104_089.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_373_176_017.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_109_117_076.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_263_105_088.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_378_140_053.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_539_187_006.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_374_164_029.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_539_187_006.markdup.bam
+EOF
+
+echo ""
+echo "Sample list created with 22 samples:"
+echo "  5 pipiens (BE, Cache, OGD)"
+echo "  5 quinquefasciatus (SGE)"
+echo "  12 hybrids (SLC)"
+
+# Extract these samples from VCF
+echo ""
+echo "Extracting samples..."
+bcftools view -S ${OUT_DIR}/samples_for_ddRAD.txt \
+    $VCF_IN \
+    -O z -o ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz
+
+# Index the output
+echo "Indexing output VCF..."
+bcftools index ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz
+
+# Stats
+echo ""
+echo "=== Extraction Complete ==="
+echo "End time: $(date)"
+echo "Output: ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz"
+echo ""
+bcftools stats ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz | grep "number of samples:"
+bcftools stats ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz | grep "number of SNPs:"
