@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=4:00:00
+#SBATCH --time=2:00:00
 #SBATCH --mem=8G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
@@ -17,7 +17,7 @@ OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
 echo "=== Extracting 22 samples for ddRAD merge ==="
 echo "Start time: $(date)"
 
-# Create sample list file
+# Create sample list file (FIXED - removed duplicate)
 cat > ${OUT_DIR}/samples_for_ddRAD.txt << EOF
 /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/BE_204_155_038.markdup.bam
 /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/BE_203_167_026.markdup.bam
@@ -40,31 +40,30 @@ cat > ${OUT_DIR}/samples_for_ddRAD.txt << EOF
 /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_378_140_053.markdup.bam
 /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_539_187_006.markdup.bam
 /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_374_164_029.markdup.bam
-/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_539_187_006.markdup.bam
 EOF
 
 echo ""
-echo "Sample list created with 22 samples:"
+echo "Sample list created with 21 samples:"
 echo "  5 pipiens (BE, Cache, OGD)"
 echo "  5 quinquefasciatus (SGE)"
-echo "  12 hybrids (SLC)"
+echo "  11 hybrids (SLC)"
 
 # Extract these samples from VCF
 echo ""
 echo "Extracting samples..."
 bcftools view -S ${OUT_DIR}/samples_for_ddRAD.txt \
     $VCF_IN \
-    -O z -o ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz
+    -O z -o ${OUT_DIR}/WGS_21samples_for_ddRAD.vcf.gz
 
 # Index the output
 echo "Indexing output VCF..."
-bcftools index ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz
+bcftools index ${OUT_DIR}/WGS_21samples_for_ddRAD.vcf.gz
 
 # Stats
 echo ""
 echo "=== Extraction Complete ==="
 echo "End time: $(date)"
-echo "Output: ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz"
+echo "Output: ${OUT_DIR}/WGS_21samples_for_ddRAD.vcf.gz"
 echo ""
-bcftools stats ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz | grep "number of samples:"
-bcftools stats ${OUT_DIR}/WGS_22samples_for_ddRAD.vcf.gz | grep "number of SNPs:"
+bcftools stats ${OUT_DIR}/WGS_21samples_for_ddRAD.vcf.gz | grep "number of samples:"
+bcftools stats ${OUT_DIR}/WGS_21samples_for_ddRAD.vcf.gz | grep "number of SNPs:"
