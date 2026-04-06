@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=1:00:00
+#SBATCH --time=5:00:00
 #SBATCH --mem=8G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
