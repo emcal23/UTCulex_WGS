@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=5:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mem=8G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
@@ -12,7 +12,7 @@
 module load bcftools
 
 WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/WGS_21samples_for_ddRAD.vcf.gz
-DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_filtered/cx_ddRAD_combined2-3_g70m70g20_ABfiltered.p.snps.vcf
+DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_filtered/cx_ddRAD_combined2-3_g70m70g20_ABfiltered.p.snps.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
 
 echo "=== Finding overlapping SNP positions ==="
@@ -39,4 +39,4 @@ echo "Shared positions: $(wc -l < ${OUT_DIR}/shared_positions.txt)"
 echo ""
 echo "=== Complete ==="
 echo "End time: $(date)"
-echo "Shared positions saved to: ${OUT_DIR}/shared_position
+echo "Shared positions saved to: ${OUT_DIR}/shared_positions.txt"
