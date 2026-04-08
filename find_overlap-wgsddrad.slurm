@@ -2,7 +2,7 @@
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
 #SBATCH --time=1:00:00
-#SBATCH --mem=8G
+#SBATCH --mem=16G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
 #SBATCH --job-name="find_overlap"
@@ -20,27 +20,22 @@ echo "Start time: $(date)"
 
 # Extract positions
 echo "Extracting WGS positions..."
-bcftools query -f '%CHROM\t%POS\n' $WGS_VCF > ${OUT_DIR}/wgs_positions_raw.txt
+bcftools query -f '%CHROM\t%POS\n' $WGS_VCF > ${OUT_DIR}/wgs_positions.txt
 
 echo "Extracting ddRAD positions..."
-bcftools query -f '%CHROM\t%POS\n' $DDRAD_VCF > ${OUT_DIR}/ddrad_positions_raw.txt
+bcftools query -f '%CHROM\t%POS\n' $DDRAD_VCF > ${OUT_DIR}/ddrad_positions.txt
 
-# Sort properly (version sort for scaffold names)
-echo "Sorting positions..."
-sort -V ${OUT_DIR}/wgs_positions_raw.txt > ${OUT_DIR}/wgs_positions_sorted.txt
-sort -V ${OUT_DIR}/ddrad_positions_raw.txt > ${OUT_DIR}/ddrad_positions_sorted.txt
-
-# Find intersection using join
-echo "Finding shared positions..."
-join -t $'\t' ${OUT_DIR}/wgs_positions_sorted.txt ${OUT_DIR}/ddrad_positions_sorted.txt > ${OUT_DIR}/shared_positions.txt
-
-# Cleanup
-rm ${OUT_DIR}/wgs_positions_raw.txt ${OUT_DIR}/ddrad_positions_raw.txt
+# Use awk to find exact CHROM+POS matches
+echo "Finding shared positions (this may take a few minutes)..."
+awk 'NR==FNR{a[$1"\t"$2]; next} ($1"\t"$2) in a' \
+    ${OUT_DIR}/ddrad_positions.txt \
+    ${OUT_DIR}/wgs_positions.txt \
+    > ${OUT_DIR}/shared_positions.txt
 
 echo ""
 echo "=== Position Summary ==="
-echo "WGS positions: $(wc -l < ${OUT_DIR}/wgs_positions_sorted.txt)"
-echo "ddRAD positions: $(wc -l < ${OUT_DIR}/ddrad_positions_sorted.txt)"
+echo "WGS positions: $(wc -l < ${OUT_DIR}/wgs_positions.txt)"
+echo "ddRAD positions: $(wc -l < ${OUT_DIR}/ddrad_positions.txt)"
 echo "Shared positions: $(wc -l < ${OUT_DIR}/shared_positions.txt)"
 
 echo ""
@@ -48,5 +43,10 @@ echo "First 10 shared positions:"
 head -10 ${OUT_DIR}/shared_positions.txt
 
 echo ""
+echo "Last 10 shared positions:"
+tail -10 ${OUT_DIR}/shared_positions.txt
+
+echo ""
 echo "=== Complete ==="
 echo "End time: $(date)"
+echo "Shared positions saved to: ${OUT_DIR}/shared_positions.txt"
