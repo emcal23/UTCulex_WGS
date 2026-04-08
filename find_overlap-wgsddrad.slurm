@@ -18,23 +18,37 @@ OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddR
 echo "=== Finding overlapping SNP positions ==="
 echo "Start time: $(date)"
 
+# Set locale for consistent sorting
+export LC_ALL=C
+
 # Get positions from WGS (CHROM + POS)
 echo "Extracting WGS positions..."
-bcftools query -f '%CHROM\t%POS\n' $WGS_VCF | sort -k1,1 -k2,2n > ${OUT_DIR}/wgs_positions.txt
+bcftools query -f '%CHROM\t%POS\n' $WGS_VCF > ${OUT_DIR}/wgs_positions_unsorted.txt
+echo "Sorting WGS positions..."
+sort -k1,1 -k2,2n ${OUT_DIR}/wgs_positions_unsorted.txt > ${OUT_DIR}/wgs_positions.txt
 
 # Get positions from ddRAD (CHROM + POS)
 echo "Extracting ddRAD positions..."
-bcftools query -f '%CHROM\t%POS\n' $DDRAD_VCF | sort -k1,1 -k2,2n > ${OUT_DIR}/ddrad_positions.txt
+bcftools query -f '%CHROM\t%POS\n' $DDRAD_VCF > ${OUT_DIR}/ddrad_positions_unsorted.txt
+echo "Sorting ddRAD positions..."
+sort -k1,1 -k2,2n ${OUT_DIR}/ddrad_positions_unsorted.txt > ${OUT_DIR}/ddrad_positions.txt
 
 # Find shared positions (intersection)
 echo "Finding shared positions..."
 comm -12 ${OUT_DIR}/wgs_positions.txt ${OUT_DIR}/ddrad_positions.txt > ${OUT_DIR}/shared_positions.txt
+
+# Cleanup temp files
+rm ${OUT_DIR}/wgs_positions_unsorted.txt ${OUT_DIR}/ddrad_positions_unsorted.txt
 
 echo ""
 echo "=== Position Summary ==="
 echo "WGS positions: $(wc -l < ${OUT_DIR}/wgs_positions.txt)"
 echo "ddRAD positions: $(wc -l < ${OUT_DIR}/ddrad_positions.txt)"
 echo "Shared positions: $(wc -l < ${OUT_DIR}/shared_positions.txt)"
+
+echo ""
+echo "First few shared positions:"
+head ${OUT_DIR}/shared_positions.txt
 
 echo ""
 echo "=== Complete ==="
