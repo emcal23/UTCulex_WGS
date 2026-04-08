@@ -13,16 +13,30 @@ module load bcftools
 
 WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/WGS_shared_snps.vcf.gz
 DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/ddRAD_shared_snps.vcf.gz
+REF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
 
-echo "=== Merging WGS and ddRAD VCFs ==="
+echo "=== Normalizing and merging VCFs ==="
 echo "Start time: $(date)"
 
-# Merge VCFs
-echo "Merging 21 WGS + 146 ddRAD = 167 total samples..."
+# Normalize WGS VCF (check REF alleles against reference)
+echo "Normalizing WGS VCF..."
+bcftools norm -f $REF -c s $WGS_VCF \
+    -O z -o ${OUT_DIR}/WGS_shared_normalized.vcf.gz
+bcftools index ${OUT_DIR}/WGS_shared_normalized.vcf.gz
+
+# Normalize ddRAD VCF (check REF alleles against reference)
+echo "Normalizing ddRAD VCF..."
+bcftools norm -f $REF -c s $DDRAD_VCF \
+    -O z -o ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz
+bcftools index ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz
+
+# Now merge normalized VCFs
+echo ""
+echo "Merging normalized VCFs..."
 bcftools merge \
-    $WGS_VCF \
-    $DDRAD_VCF \
+    ${OUT_DIR}/WGS_shared_normalized.vcf.gz \
+    ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz \
     -O z -o ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz
 
 # Index merged VCF
@@ -38,10 +52,8 @@ echo ""
 echo "Merged VCF stats:"
 bcftools stats ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | grep "number of samples:"
 bcftools stats ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | grep "number of SNPs:"
-bcftools stats ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | grep "number of records:"
 
 echo ""
-echo "Sample breakdown:"
 echo "First 5 WGS samples:"
 bcftools query -l ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | head -5
 
