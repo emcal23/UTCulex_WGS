@@ -1,0 +1,110 @@
+#!/bin/bash
+#SBATCH --partition=saarman-np
+#SBATCH --account=saarman-np
+#SBATCH --time=1:00:00
+#SBATCH --mem=8G
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --job-name="check_missingness"
+#SBATCH --mail-user=emily.calhoun@usu.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+
+module load bcftools
+
+# Define input and output paths
+MERGED_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/merged_WGS_ddRAD_raw.vcf.gz
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
+
+echo "=== Checking Missingness in Merged VCF ==="
+echo "Start time: $(date)"
+
+# Check if input file exists
+if [ ! -f "$MERGED_VCF" ]; then
+    echo "Error: Input VCF file not found: $MERGED_VCF"
+    exit 1
+fi
+
+echo "Input VCF: $MERGED_VCF"
+echo "Output directory: $OUT_DIR"
+
+# Get basic stats
+echo "=== Basic VCF stats ==="
+echo "Number of samples: $(bcftools query -l "$MERGED_VCF" | wc -l)"
+echo "Number of variants: $(bcftools view -H "$MERGED_VCF" | wc -l)"
+
+# Calculate missingness per site (SNP)
+echo "=== Calculating missingness per SNP ==="
+bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%F_MISSING\n' "$MERGED_VCF" > "$OUT_DIR/missingness_per_snp.txt"
+
+# Calculate missingness per sample
+echo "=== Calculating missingness per sample ==="
+bcftools query -l "$MERGED_VCF" > "$OUT_DIR/sample_list.txt"
+
+# Create header for sample missingness file
+echo -e "SAMPLE\tN_MISSING\tN_SITES\tF_MISSING" > "$OUT_DIR/missingness_per_sample.txt"
+
+# Get total number of sites
+total_sites=$(bcftools view -H "$MERGED_VCF" | wc -l)
+echo "Total sites for calculation: $total_sites"
+
+# Calculate missingness for each sample using awk
+while read sample; do
+    # Count missing genotypes for this sample
+    missing_count=$(bcftools view -s "$sample" "$MERGED_VCF" | bcftools query -f '[%GT]\n' | awk '
+        BEGIN { missing = 0 }
+        /\.\/\./ { missing++ }
+        END { print missing }
+    ')
+    
+    # Calculate missing frequency using awk
+    missing_freq=$(awk -v missing="$missing_count" -v total="$total_sites" 'BEGIN { printf "%.4f", missing/total }')
+    
+    echo -e "$sample\t$missing_count\t$total_sites\t$missing_freq" >> "$OUT_DIR/missingness_per_sample.txt"
+    echo "Processed sample: $sample (missing: $missing_count/$total_sites = $missing_freq)"
+done < "$OUT_DIR/sample_list.txt"
+
+# Generate summary statistics using awk
+echo "=== Generating summary statistics ==="
+
+# Summary for SNPs
+echo "=== SNP Missingness Summary ===" > "$OUT_DIR/missingness_summary.txt"
+echo "Total SNPs: $(wc -l < $OUT_DIR/missingness_per_snp.txt)" >> "$OUT_DIR/missingness_summary.txt"
+
+# Count SNPs with different missingness thresholds
+awk '$6 > 0.1' "$OUT_DIR/missingness_per_snp.txt" | wc -l > temp_count
+echo "SNPs with >10% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+awk '$6 > 0.2' "$OUT_DIR/missingness_per_snp.txt" | wc -l > temp_count
+echo "SNPs with >20% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+awk '$6 > 0.5' "$OUT_DIR/missingness_per_snp.txt" | wc -l > temp_count
+echo "SNPs with >50% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+echo "" >> "$OUT_DIR/missingness_summary.txt"
+
+# Summary for samples
+echo "=== Sample Missingness Summary ===" >> "$OUT_DIR/missingness_summary.txt"
+tail -n +2 "$OUT_DIR/missingness_per_sample.txt" | wc -l > temp_count
+echo "Total samples: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+tail -n +2 "$OUT_DIR/missingness_per_sample.txt" | awk '$4 > 0.1' | wc -l > temp_count
+echo "Samples with >10% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+tail -n +2 "$OUT_DIR/missingness_per_sample.txt" | awk '$4 > 0.2' | wc -l > temp_count
+echo "Samples with >20% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+tail -n +2 "$OUT_DIR/missingness_per_sample.txt" | awk '$4 > 0.5' | wc -l > temp_count
+echo "Samples with >50% missing: $(cat temp_count)" >> "$OUT_DIR/missingness_summary.txt"
+
+# Clean up temp file
+rm -f temp_count
+
+echo ""
+echo "=== Output files created ==="
+echo "SNP missingness: $OUT_DIR/missingness_per_snp.txt"
+echo "Sample missingness: $OUT_DIR/missingness_per_sample.txt"
+echo "Summary statistics: $OUT_DIR/missingness_summary.txt"
+
+echo ""
+echo "End time: $(date)"
+echo "=== Complete ==="
