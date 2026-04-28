@@ -5,7 +5,7 @@
 #SBATCH --mem=8G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
-#SBATCH --job-name="extract_22samples"
+#SBATCH --job-name="extract_21samples"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
@@ -14,7 +14,7 @@ module load bcftools
 VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_stage2_bias_filtered.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
 
-echo "=== Extracting 22 samples for ddRAD merge ==="
+echo "=== Extracting 21 samples for ddRAD merge ==="
 echo "Start time: $(date)"
 
 # Create sample list file (FIXED - removed duplicate)
