@@ -81,12 +81,53 @@ WMAD_011_161_032 (L004 + L001)
 2/12/26
 Updated array and running step 4 samtools markdups again
 
-
 2/13/26
 running tables to investigate read depth and pcr dups to determine what to use for bcf filters 
 
+Looking at coverage:
+
+EXCELLENT coverage (≥20x) - 16 samples:
+* BE_204_155_038 (21x)
+* Cache_122_119_074 (22x)
+* OGD_802_178_015 (23x)
+* SGE_015_177_016 (22x)
+* SLC_372_188_005 (25x)
+* SLC_379_128_065 (24x)
+* SLC_523_104_089 (24x)
+* UTCO_103_175_018 (23x)
+* UTCO_104_163_030 (22x)
+* UTCO_119_103_090 (23x)
+* UTCO_122_174_019 (21x)
+* UTCO_124_149_044 (41x) ⭐ (highest!)
+* UTCO_136_185_008 (23x)
+* WMAD_011_161_032 (24x)
+GOOD coverage (15-20x) - 18 samples
+MARGINAL coverage (10-15x) - 21 samples
+LOW coverage (5-10x) - 6 samples:
+* BE_202_179_014 (10x) - borderline
+* OGD_806_154_039 (8x)
+* OGD_807_142_051 (6x)
+* OGD_809_130_063 (8x)
+* UTCO_135_102_091 (9x)
+* WMAD_018_172_021 (8x)
+MAYBETOO LOW (<5x) - 4 samples (consider excluding?):
+1. BE_201_191_002 - 1.54x 
+2. SLC_053_141_052 - 2.17x
+3. UTCO_132_137_056 - 1.11x 
+4. SGE_011_106_087 - 4.48x
+5. WMAD_007_112_081 - 4.43x
+6. UTCO_123_161_032 - 5.13x
+7. UTCO_134_113_080 - 4.92x
+8. SLC_375_152_041 - 4.73x
+9. WMAD_019_160_033 - 4.96x
+
+Notes: 
+*Most samples (55/65) have ≥10x coverage
+*Mapping rates range from 23-99%, with some samples showing low mapping that may indicate divergence/hybridization or contamination
+*PCR duplicate rates are normal (5-16%)
+
 3/31/26
-have 2 vcf files from stage 1 QC filter and stage 2 GATK filter i adapted form Zachs code.
+have 2 vcf files - from stage 1 QC filter and stage 2 GATK filter I adapted form Zach's code (step 7).
 
 SNP Count Summary:
 Stage 1 (raw): 72,611,536 SNPs
@@ -95,10 +136,12 @@ Removed: 31,941,138 SNPs
 Percentage removed: ~44%
 
 Next steps:
-Fork A: Extract ~12 samples for ddRAD merge
+Fork A: Extract samples for ddRAD merge! (Step 8)
+-Chose 5 North, 5 South, 11 SLC - 21 total best looking samples in terms of coverage 
+-Made vcf file and compressed
+-Found overlapping sites between 21 WGS and 146 ddRAD
+-Extracted shared SNPS and merged the two
 
-Which SLC samples do you want?
-Which sample is pure quinquefasciatus?
-Which sample is pure pipiens?
+4/20 - 
 
 Fork B: Continue filtering all 65 for WGS-only analysis
