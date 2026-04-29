@@ -140,7 +140,8 @@ Fork A: Extract samples for ddRAD merge! (Step 8)
 -Found overlapping sites between 21 WGS and 146 ddRAD
 -Extracted shared SNPS and merged the two
 
-4/29:
+4/29: Went forward with missingness filter per SNP 20% and per sample 30% left with 152 samples and 774 SNPs 
+Tried PCA plot, DAPC, FST etc. with these results, if not able to make any conclusions maybe we go back to earlier in the ddRAD pipeline and try to retain more SNPs
 
 
 Fork B: Continue filtering all 65 for WGS-only analysis
