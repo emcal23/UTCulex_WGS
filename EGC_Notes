@@ -37,10 +37,8 @@ checking bam list
 
 All BAM files: 99 (with duplicate lanes)
 Merged BAMs: 65 (unique biological samples)
-Difference: 99 - 65 = 34 extra files
-This means 34 samples had multiple lanes that got merged together.
+Difference: 99 - 65 = 34 extra files(samples had multiple lanes that got merged together)
 
-Let me count the duplicates from your list to verify:
 Samples with 2 lanes (pairs):
 
 BE_202_179_014 (L001 + L004)
@@ -127,9 +125,9 @@ Notes:
 *PCR duplicate rates are normal (5-16%)
 
 3/31/26
-have 2 vcf files - from stage 1 QC filter and stage 2 GATK filter I adapted form Zach's code (step 7).
+now i have 2 vcf files - from stage 1 QC filter and stage 2 GATK filter I adapted form Zach's code (step 7).
 
-SNP Count Summary:
+WGS SNP Count Summary:
 Stage 1 (raw): 72,611,536 SNPs
 Stage 2 (bias filtered): 40,670,398 SNPs
 Removed: 31,941,138 SNPs
@@ -142,6 +140,8 @@ Fork A: Extract samples for ddRAD merge! (Step 8)
 -Found overlapping sites between 21 WGS and 146 ddRAD
 -Extracted shared SNPS and merged the two
 
-4/20 - 
+4/29:
+
 
 Fork B: Continue filtering all 65 for WGS-only analysis
+-what filters do i use for these WGS? 
