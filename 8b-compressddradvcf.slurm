@@ -10,7 +10,8 @@
 module load bcftools
 module load htslib
 
-DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_filtered/cx_ddRAD_combined2-3_g70m70g20_ABfiltered.p.snps.vcf
+DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_populations_formerge/populations.snps.vcf.gz
+#DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_filtered/cx_ddRAD_combined2-3_g70m70g20_ABfiltered.p.snps.vcf
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_filtered
 
 echo "Compressing and indexing ddRAD VCF..."
