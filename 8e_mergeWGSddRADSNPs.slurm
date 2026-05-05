@@ -1,67 +1,44 @@
 #!/bin/bash
 #SBATCH --partition=saarman-np
 #SBATCH --account=saarman-np
-#SBATCH --time=1:00:00
-#SBATCH --mem=8G
+#SBATCH --time=12:00:00
+#SBATCH --mem=64G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
-#SBATCH --job-name="merge_vcfs"
+#SBATCH --job-name="merge_WGS_ddRAD"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 module load bcftools
 
-WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/WGS_shared_snps.vcf.gz
-DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/ddRAD_shared_snps.vcf.gz
-REF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta
+WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/WGS_21samples_for_ddRAD.vcf.gz
+DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_populations_formerge/populations.snps.sorted.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
+REGIONS=${OUT_DIR}/shared_positions.txt
 
-echo "=== Normalizing and merging VCFs ==="
+echo "=== Merging WGS and ddRAD VCFs ==="
 echo "Start time: $(date)"
 
-# Normalize WGS VCF (check REF alleles against reference)
-echo "Normalizing WGS VCF..."
-bcftools norm -f $REF -c s $WGS_VCF \
-    -O z -o ${OUT_DIR}/WGS_shared_normalized.vcf.gz
-bcftools index ${OUT_DIR}/WGS_shared_normalized.vcf.gz
+# Convert shared positions to bcftools regions format
+echo "Preparing regions file..."
+awk '{print $1":"$2"-"$2}' $REGIONS > ${OUT_DIR}/shared_regions.txt
 
-# Normalize ddRAD VCF (check REF alleles against reference)
-echo "Normalizing ddRAD VCF..."
-bcftools norm -f $REF -c s $DDRAD_VCF \
-    -O z -o ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz
-bcftools index ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz
-
-# Now merge normalized VCFs
-echo ""
-echo "Merging normalized VCFs..."
+# Merge on shared positions only
+echo "Merging..."
 bcftools merge \
-    ${OUT_DIR}/WGS_shared_normalized.vcf.gz \
-    ${OUT_DIR}/ddRAD_shared_normalized.vcf.gz \
-    -O z -o ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz
+    --regions-file ${OUT_DIR}/shared_regions.txt \
+    --merge snps \
+    -O z \
+    -o ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz \
+    $WGS_VCF $DDRAD_VCF
 
-# Index merged VCF
+# Index the output
 echo "Indexing merged VCF..."
-bcftools index ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz
+bcftools index ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz
 
 echo ""
-echo "=== Merge Complete ==="
-echo "End time: $(date)"
+echo "=== Merge Summary ==="
+echo "Samples in merged VCF: $(bcftools query -l ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz | wc -l)"
+echo "SNPs in merged VCF: $(bcftools view -H ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz | wc -l)"
 
-# Check the merged VCF
-echo ""
-echo "Merged VCF stats:"
-bcftools stats ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | grep "number of samples:"
-bcftools stats ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | grep "number of SNPs:"
-
-echo ""
-echo "First 5 WGS samples:"
-bcftools query -l ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | head -5
-
-echo ""
-echo "First 5 ddRAD samples:"
-bcftools query -l ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz | tail -150 | head -5
-
-echo ""
-echo "Output file: ${OUT_DIR}/merged_WGS_ddRAD_raw.vcf.gz"
-echo ""
-echo "Next step: Filter for missingness and MAC!"
+echo "Done! End time: $(date)"
