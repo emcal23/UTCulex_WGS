@@ -19,14 +19,17 @@ OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddR
 echo "=== Normalizing and Merging WGS and ddRAD VCFs ==="
 echo "Start time: $(date)"
 
-# Normalize WGS VCF
-echo "Normalizing WGS VCF..."
-bcftools norm -f $REF -m -any $WGS_VCF -O z -o ${OUT_DIR}/WGS_normalized.vcf.gz
-bcftools index ${OUT_DIR}/WGS_normalized.vcf.gz
+# WGS normalization already completed - skipping
+# Output: ${OUT_DIR}/WGS_normalized.vcf.gz
 
-# Normalize ddRAD VCF
+#bcftools norm -f $REF -m -any $WGS_VCF -O z -o ${OUT_DIR}/WGS_normalized.vcf.gz
+#bcftools index ${OUT_DIR}/WGS_normalized.vcf.gz
+
+
+# Normalize ddRAD VCF - skip REF mismatches with -c s
 echo "Normalizing ddRAD VCF..."
-bcftools norm -f $REF -m -any $DDRAD_VCF -O z -o ${OUT_DIR}/ddRAD_normalized.vcf.gz
+bcftools norm -f $REF -m -any -c s $DDRAD_VCF \
+    -O z -o ${OUT_DIR}/ddRAD_normalized.vcf.gz
 bcftools index ${OUT_DIR}/ddRAD_normalized.vcf.gz
 
 # Merge normalized VCFs
