@@ -14,19 +14,13 @@ module load bcftools
 WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/WGS_21samples_for_ddRAD.vcf.gz
 DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_populations_formerge/populations.snps.sorted.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
-REGIONS=${OUT_DIR}/shared_positions.txt
 
 echo "=== Merging WGS and ddRAD VCFs ==="
 echo "Start time: $(date)"
 
-# Convert shared positions to bcftools regions format
-echo "Preparing regions file..."
-awk '{print $1":"$2"-"$2}' $REGIONS > ${OUT_DIR}/shared_regions.txt
-
-# Merge on shared positions only
+# Merge without regions filter — bcftools merge handles mismatched sites with missing data
 echo "Merging..."
 bcftools merge \
-    --regions-file ${OUT_DIR}/shared_regions.txt \
     --merge snps \
     -O z \
     -o ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz \
