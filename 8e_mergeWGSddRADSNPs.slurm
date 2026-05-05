@@ -5,28 +5,40 @@
 #SBATCH --mem=64G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
-#SBATCH --job-name="merge_WGS_ddRAD"
+#SBATCH --job-name="normalize_merge"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 module load bcftools
 
+REF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_bwa/ref/Cpip29_nodeb_gfill_mito.fasta
 WGS_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/WGS_21samples_for_ddRAD.vcf.gz
 DDRAD_VCF=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/cx_ddRAD_populations_formerge/populations.snps.sorted.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
 
-echo "=== Merging WGS and ddRAD VCFs ==="
+echo "=== Normalizing and Merging WGS and ddRAD VCFs ==="
 echo "Start time: $(date)"
 
-# Merge without regions filter — bcftools merge handles mismatched sites with missing data
+# Normalize WGS VCF
+echo "Normalizing WGS VCF..."
+bcftools norm -f $REF -m -any $WGS_VCF -O z -o ${OUT_DIR}/WGS_normalized.vcf.gz
+bcftools index ${OUT_DIR}/WGS_normalized.vcf.gz
+
+# Normalize ddRAD VCF
+echo "Normalizing ddRAD VCF..."
+bcftools norm -f $REF -m -any $DDRAD_VCF -O z -o ${OUT_DIR}/ddRAD_normalized.vcf.gz
+bcftools index ${OUT_DIR}/ddRAD_normalized.vcf.gz
+
+# Merge normalized VCFs
 echo "Merging..."
 bcftools merge \
     --merge snps \
     -O z \
     -o ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz \
-    $WGS_VCF $DDRAD_VCF
+    ${OUT_DIR}/WGS_normalized.vcf.gz \
+    ${OUT_DIR}/ddRAD_normalized.vcf.gz
 
-# Index the output
+# Index output
 echo "Indexing merged VCF..."
 bcftools index ${OUT_DIR}/merged_WGS_ddRAD.vcf.gz
 
