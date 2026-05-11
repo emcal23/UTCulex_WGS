@@ -18,10 +18,10 @@ echo "=== Joint Filtering Merged WGS + ddRAD VCF ==="
 echo "Start time: $(date)"
 echo "Input SNPs: $(bcftools view -H $MERGED | wc -l)"
 
-# Step 1: Remove sites with >50% missingness and MAF < 0.05
+# Step 1: Remove sites with >50% missingness and MAC > 2
 echo "Filtering for missingness and MAF..."
 bcftools view $MERGED \
-    -i 'F_MISSING < 0.5 && MAF > 0.05' \
+    -i 'F_MISSING < 0.5 && MAC >= 2' \
     -O z -o ${OUT_DIR}/merged_filtered_maf05_miss50.vcf.gz
 bcftools index ${OUT_DIR}/merged_filtered_maf05_miss50.vcf.gz
 
