@@ -144,5 +144,8 @@ Fork A: Extract samples for ddRAD merge! (Step 8)
 Tried PCA plot, DAPC, FST etc. with these results, if not able to make any conclusions maybe we go back to earlier in the ddRAD pipeline and try to retain more SNPs
 
 
-Fork B: Continue filtering all 65 for WGS-only analysis
--what filters do i use for these WGS? 
+
+5/11/26 - went back to ddrad step 7 and redid all of these steps in wgs step 8 to get more SNPS! Worked way better. 
+Now running step 8g with MAC >2 instead of MAF
+
+
