@@ -35,9 +35,9 @@ echo "Input SNPs: $(bcftools view -H ${in_file} | wc -l)"
 # ── Step 1: Biallelic SNPs only + QUAL and depth pre-filter ───────────────
 # NOTE: keeping biallelic SNPs only; indels excluded for population genomics
 echo "Step 1: Pre-filtering biallelic SNPs by QUAL and depth..."
-bcftools view -m2 -M2 -v snps ${in_file} | \
-bcftools filter -i 'QUAL >= 30 && INFO/DP >= 10 && INFO/DP <= 500' \
+bcftools view -m2 -M2 -v snps ${in_file} \
     -O z -o ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz
+
 
 bcftools index ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz
 echo "After biallelic + QUAL/DP filter: $(bcftools view -H ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz | wc -l) SNPs"
