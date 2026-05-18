@@ -40,7 +40,7 @@ bcftools view -m2 -M2 -v snps ${in_file} \
 
 
 bcftools index ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz
-echo "After biallelic + QUAL/DP filter: $(bcftools view -H ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz | wc -l) SNPs"
+echo "After biallelic filter: $(bcftools view -H ${out_dir}/${plate_name}_${filter_include}_biallelic_prefiltered.vcf.gz | wc -l) SNPs"
 
 # ── Step 2: Extract GT and AD fields for AB calculation ───────────────────
 # FORMAT is per-sample, so query extracts each sample's GT and AD
