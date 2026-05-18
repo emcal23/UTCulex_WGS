@@ -320,3 +320,25 @@ SNPs after pruning:  120899
 Samples retained:    167
 Output: /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g50_ABfiltered_LDpruned.vcf.gz
 Done! End time: Mon May 18 14:56:17 MDT 2026
+
+
+PCA looked the same... trying to filter WGS more. 
+
+=== Script 4: WGS-aware missingness filter ===
+Start time: Mon May 18 15:28:36 MDT 2026
+Input SNPs:    120899
+Input samples: 167
+--- Building sample lists ---
+WGS samples:   21
+ddRAD samples: 146
+--- Filtering sites by missingness within WGS samples ---
+Sites passing WGS missingness filter: 85833
+--- Extracting passing sites from full VCF ---
+
+=== Script 4 Summary ===
+Input SNPs:    120899
+Input samples: 167
+Final SNPs:    86412
+Final samples: 167
+Output: merged_WGS_ddRAD_g70m70g50_ABfiltered_LDpruned_renamed_WGSfilt.vcf.gz
+Done! End time: Mon May 18 15:28:46 MDT 2026
