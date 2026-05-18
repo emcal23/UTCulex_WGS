@@ -4,10 +4,9 @@
 #SBATCH --ntasks=4
 #SBATCH --mem=32G
 #SBATCH --account=saarman-np
-#SBATCH --partition=saarman-shared-np
+#SBATCH --partition=saarman-np
 #SBATCH --job-name=wgs_missingness_filter
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=u1055819@umail.utah.edu
 
 module load bcftools
 module load htslib
