@@ -263,4 +263,21 @@ Set 3 (g70m70g20) samples:          167
 *Going forward with set 2 
 filter_include="g70m70g50"
 
+=== Script 3: AB Filter ===
+Input: /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g50_filtered.recode.vcf.gz
+Start time: Mon May 18 14:40:55 MDT 2026
+Input SNPs: 322935
+Step 1: Pre-filtering biallelic SNPs by QUAL and depth...
+After biallelic filter: 315702 SNPs
+Step 2: Extracting GT and AD fields...
+SNPs to evaluate for AB: 315702
+Step 3: Calculating average allele balance per SNP...
+SNPs passing AB filter: 284159
+Step 4: Subsetting VCF to AB-passing sites...
 
+=== Script 3 Summary ===
+Input SNPs (post-missingness filter): 322935
+Final SNPs (post-AB filter):          290266
+Final samples:                        167
+Output: /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g50_ABfiltered.vcf.gz
+Done! End time: Mon May 18 14:43:57 MDT 2026
