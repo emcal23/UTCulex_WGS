@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH --time=1:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
+#SBATCH --mem=16G
+#SBATCH --account=saarman-np
+#SBATCH --partition=saarman-np
+#SBATCH --job-name=bgzip_index
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=u1055819@umail.utah.edu
+
+module load bcftools
+module load htslib        # this is what provides bgzip on CHPC
+
+out_dir=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered
+plate_name="merged_WGS_ddRAD"
+filter_include="g70m70g50"
+
+bgzip ${out_dir}/${plate_name}_${filter_include}_filtered.recode.vcf
+bcftools index ${out_dir}/${plate_name}_${filter_include}_filtered.recode.vcf.gz
+
+echo "Final SNPs:    $(bcftools view -H ${out_dir}/${plate_name}_${filter_include}_filtered.recode.vcf.gz | wc -l)"
+echo "Final samples: $(bcftools query -l ${out_dir}/${plate_name}_${filter_include}_filtered.recode.vcf.gz | wc -l)"
