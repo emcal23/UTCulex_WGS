@@ -7,7 +7,7 @@
 #SBATCH --partition=saarman-np
 #SBATCH --job-name=bgzip_index
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=u1055819@umail.utah.edu
+#SBATCH --mail-user=emily.calhoun@usu.edu
 
 module load bcftools
 module load htslib        # this is what provides bgzip on CHPC
