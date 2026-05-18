@@ -10,9 +10,10 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 module load bcftools
+module load htslib
 
-IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/merged_filtered_final.vcf.gz
-OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged
+IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g50_ABfiltered.vcf.gz
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered
 
 echo "=== LD Thinning ==="
 echo "Start time: $(date)"
@@ -23,10 +24,10 @@ bcftools +prune \
     -w 1000bp \
     --nsites-per-win 1 \
     $IN \
-    -O z -o ${OUT_DIR}/merged_filtered_thinned.vcf.gz
+    -O z -o ${OUT_DIR}/merged_WGS_ddRAD_g70m70g50_ABfiltered_thinned.vcf.gz
 
-bcftools index ${OUT_DIR}/merged_filtered_thinned.vcf.gz
+bcftools index ${OUT_DIR}/merged_WGS_ddRAD_g70m70g50_ABfiltered_thinned.vcf.gz
 
-echo "SNPs after thinning: $(bcftools view -H ${OUT_DIR}/merged_filtered_thinned.vcf.gz | wc -l)"
-echo "Samples retained: $(bcftools query -l ${OUT_DIR}/merged_filtered_thinned.vcf.gz | wc -l)"
+echo "SNPs after thinning: $(bcftools view -H ${OUT_DIR}/merged_WGS_ddRAD_g70m70g50_ABfiltered_thinned.vcf.gz | wc -l)"
+echo "Samples retained: $(bcftools query -l ${OUT_DIR}/merged_WGS_ddRAD_g70m70g50_ABfiltered_thinned.vcf.gz | wc -l)"
 echo "Done! End time: $(date)"
