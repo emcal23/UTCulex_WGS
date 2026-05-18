@@ -13,7 +13,7 @@ module load plink
 module load vcftools
 
 # ── USER CHOICE: set these after reviewing Script 1 summary ───────────────
-filter_include="g70m70g20"           # NOTE: choose from g70m70g60m60g50m50, g70m70g50, g70m70g20
+filter_include="g70m70g50"         # NOTE: choose from g70m70g60m60g50m50, g70m70g50, g70m70g20
 plate_name="merged_WGS_ddRAD"        # root name for output files
 
 # ── paths ──────────────────────────────────────────────────────────────────
