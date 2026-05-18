@@ -148,4 +148,119 @@ Tried PCA plot, DAPC, FST etc. with these results, if not able to make any concl
 5/11/26 - went back to ddrad step 7 and redid all of these steps in wgs step 8 to get more SNPS! Worked way better. 
 Now running step 8g with MAC >2 instead of MAF
 
+Tried PCAs and they looked similar
+
+Now trying method from OLeary 2018 paper/what we did originally for ddrad and doing iterative filtering now steps 9a-d of UTCulex_WGS
+here are outputs:
+
+--- Filter Set 1: g70m70g60m60g50m50 ---
+PLINK v1.90b5.3 64-bit (21 Feb 2018)           www.cog-genomics.org/plink/1.9/
+(C) 2005-2018 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to merged_WGS_ddRAD_g70m70g60m60g50m50_missing.log.
+Options in effect:
+  --allow-extra-chr
+  --file merged_WGS_ddRAD_g70m70g60m60g50m50
+  --missing
+  --out merged_WGS_ddRAD_g70m70g60m60g50m50_missing
+
+1031533 MB RAM detected; reserving 515766 MB for main workspace.
+Scanning .ped file... 0%1%2%2%3%4%5%5%6%7%8%8%9%10%11%11%12%13%14%14%15%16%17%17%18%19%20%20%21%22%22%23%24%25%25%26%27%28%28%29%30%31%31%32%33%34%34%35%36%37%37%38%39%40%40%41%42%42%43%44%45%45%46%47%48%48%49%50%51%51%52%53%54%54%55%56%57%57%58%59%60%60%61%62%62%63%64%65%65%66%67%68%68%69%70%71%71%72%73%74%74%75%76%77%77%78%79%80%80%81%82%82%83%84%85%85%86%87%88%88%89%90%91%91%92%93%94%94%95%96%97%97%98%99%100%
+.ped scan complete (for binary autoconversion).
+Performing single-pass .bed write (339380 variants, 135 people).
+0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%
+--file: merged_WGS_ddRAD_g70m70g60m60g50m50_missing-temporary.bed +
+merged_WGS_ddRAD_g70m70g60m60g50m50_missing-temporary.bim +
+merged_WGS_ddRAD_g70m70g60m60g50m50_missing-temporary.fam written.
+339380 variants loaded from .bim file.
+135 people (0 males, 0 females, 135 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to merged_WGS_ddRAD_g70m70g60m60g50m50_missing.nosex
+.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 135 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is 0.675018.
+--missing: Sample missing data report written to
+merged_WGS_ddRAD_g70m70g60m60g50m50_missing.imiss, and variant-based missing
+data report written to merged_WGS_ddRAD_g70m70g60m60g50m50_missing.lmiss.
+Set 1 SNPs:    339380
+Set 1 samples: 135
+
+--- Filter Set 2: g70m70g50 ---
+PLINK v1.90b5.3 64-bit (21 Feb 2018)           www.cog-genomics.org/plink/1.9/
+(C) 2005-2018 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to merged_WGS_ddRAD_g70m70g50_missing.log.
+Options in effect:
+  --allow-extra-chr
+  --file merged_WGS_ddRAD_g70m70g50
+  --missing
+  --out merged_WGS_ddRAD_g70m70g50_missing
+
+1031533 MB RAM detected; reserving 515766 MB for main workspace.
+Scanning .ped file... 0%1%1%2%2%3%4%4%5%5%6%7%7%8%8%9%10%10%11%11%12%13%13%14%14%15%16%16%17%17%18%19%19%20%20%21%22%22%23%23%24%25%25%26%26%27%28%28%29%29%30%31%31%32%32%33%34%34%35%35%36%37%37%38%38%39%40%40%41%41%42%43%43%44%44%45%46%46%47%47%48%49%49%50%50%51%52%52%53%53%54%55%55%56%56%57%58%58%59%59%60%61%61%62%62%63%64%64%65%65%66%67%67%68%68%69%70%70%71%71%72%73%73%74%74%75%76%76%77%77%78%79%79%80%80%81%82%82%83%83%84%85%85%86%86%87%88%88%89%89%90%91%91%92%92%93%94%94%95%95%96%97%97%98%98%99%100%
+.ped scan complete (for binary autoconversion).
+Performing single-pass .bed write (297976 variants, 167 people).
+0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%
+--file: merged_WGS_ddRAD_g70m70g50_missing-temporary.bed +
+merged_WGS_ddRAD_g70m70g50_missing-temporary.bim +
+merged_WGS_ddRAD_g70m70g50_missing-temporary.fam written.
+297976 variants loaded from .bim file.
+167 people (0 males, 0 females, 167 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to merged_WGS_ddRAD_g70m70g50_missing.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 167 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is 0.648778.
+--missing: Sample missing data report written to
+merged_WGS_ddRAD_g70m70g50_missing.imiss, and variant-based missing data report
+written to merged_WGS_ddRAD_g70m70g50_missing.lmiss.
+Set 2 SNPs:    297976
+Set 2 samples: 167
+
+--- Filter Set 3: g70m70g20 ---
+PLINK v1.90b5.3 64-bit (21 Feb 2018)           www.cog-genomics.org/plink/1.9/
+(C) 2005-2018 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to merged_WGS_ddRAD_g70m70g20_missing.log.
+Options in effect:
+  --allow-extra-chr
+  --file merged_WGS_ddRAD_g70m70g20
+  --missing
+  --out merged_WGS_ddRAD_g70m70g20_missing
+
+1031533 MB RAM detected; reserving 515766 MB for main workspace.
+Scanning .ped file... 0%1%1%2%2%3%4%4%5%5%6%7%7%8%8%9%10%10%11%11%12%13%13%14%14%15%16%16%17%17%18%19%19%20%20%21%22%22%23%23%24%25%25%26%26%27%28%28%29%29%30%31%31%32%32%33%34%34%35%35%36%37%37%38%38%39%40%40%41%41%42%43%43%44%44%45%46%46%47%47%48%49%49%50%50%51%52%52%53%53%54%55%55%56%56%57%58%58%59%59%60%61%61%62%62%63%64%64%65%65%66%67%67%68%68%69%70%70%71%71%72%73%73%74%74%75%76%76%77%77%78%79%79%80%80%81%82%82%83%83%84%85%85%86%86%87%88%88%89%89%90%91%91%92%92%93%94%94%95%95%96%97%97%98%98%99%100%
+.ped scan complete (for binary autoconversion).
+Performing single-pass .bed write (30037 variants, 167 people).
+0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%
+--file: merged_WGS_ddRAD_g70m70g20_missing-temporary.bed +
+merged_WGS_ddRAD_g70m70g20_missing-temporary.bim +
+merged_WGS_ddRAD_g70m70g20_missing-temporary.fam written.
+30037 variants loaded from .bim file.
+167 people (0 males, 0 females, 167 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to merged_WGS_ddRAD_g70m70g20_missing.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 167 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is 0.851423.
+--missing: Sample missing data report written to
+merged_WGS_ddRAD_g70m70g20_missing.imiss, and variant-based missing data report
+written to merged_WGS_ddRAD_g70m70g20_missing.lmiss.
+Set 3 SNPs:    30037
+Set 3 samples: 167
+
+=== FILTERING SUMMARY ===
+Input SNPs:                         44263515
+Input samples:                      212
+
+Set 1 (g70m70g60m60g50m50) SNPs:    339380
+Set 1 (g70m70g60m60g50m50) samples: 135
+
+Set 2 (g70m70g50) SNPs:             297976
+Set 2 (g70m70g50) samples:          167
+
+Set 3 (g70m70g20) SNPs:             30037
+Set 3 (g70m70g20) samples:          167
+
+*Going forward with set 2 
+filter_include="g70m70g50"
+
 
