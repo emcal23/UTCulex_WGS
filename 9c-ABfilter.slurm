@@ -10,6 +10,7 @@
 #SBATCH --mail-user=emily.calhoun@usu.edu
 
 module load bcftools
+module load htslib
 
 # ── USER CHOICE ────────────────────────────────────────────────────────────
 filter_include="g70m70g20"
