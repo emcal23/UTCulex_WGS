@@ -13,7 +13,7 @@ module load bcftools
 module load htslib
 
 # ── USER CHOICE ────────────────────────────────────────────────────────────
-filter_include="g70m70g50"
+filter_include="g70m70g20"
 plate_name="merged_WGS_ddRAD"
 
 # ── paths ──────────────────────────────────────────────────────────────────
