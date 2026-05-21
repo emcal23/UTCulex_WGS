@@ -342,3 +342,17 @@ Final SNPs:    86412
 Final samples: 167
 Output: merged_WGS_ddRAD_g70m70g50_ABfiltered_LDpruned_renamed_WGSfilt.vcf.gz
 Done! End time: Mon May 18 15:28:46 MDT 2026
+
+_______________________________________________________________________________
+Trying to go back to 70 70 20 which is a more picky filter
+=== AB Filter Summary ===
+Input SNPs:           32,434
+After biallelic:      31,526   (lost ~900 non-biallelic — expected)
+After AB filter:      29,075   (lost ~2,500 — clean ~10% dropout)
+Final:                29,075 SNPs, 167 samples
+
+=== LD Pruning Summary ===
+Input SNPs:          29075
+SNPs after pruning:  13910
+Samples retained:    167
+Genotyping rate:     0.75
