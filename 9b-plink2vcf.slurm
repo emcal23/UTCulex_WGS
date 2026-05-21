@@ -11,6 +11,7 @@
 
 module load plink
 module load vcftools
+module load htslib
 
 # ── USER CHOICE: set these after reviewing Script 1 summary ───────────────
 filter_include="g70m70g20"         # NOTE: choose from g70m70g60m60g50m50, g70m70g50, g70m70g20
