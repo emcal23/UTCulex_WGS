@@ -11,6 +11,7 @@
 
 module load bcftools
 module load vcftools
+module load htslib
 
 VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_stage2_bias_filtered.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
@@ -20,16 +21,17 @@ echo "=== Stage 3: SNP Filtering ==="
 echo "Input: $VCF_IN"
 echo "Start time: $(date)"
 
-# Check sample count going in
+echo "SNPs before stage 3:"
+bcftools stats $VCF_IN | grep "number of SNPs:"
 echo "Samples in input VCF:"
 bcftools query -l $VCF_IN | wc -l
 
 vcftools --gzvcf $VCF_IN \
-    --max-missing 0.80 \     # Keep SNPs present in ≥80% of samples
-    --mac 3 \                # Minor allele count ≥3
+    --max-missing 0.80 \
+    --mac 3 \
     --min-alleles 2 \
-    --max-alleles 2 \        # Biallelic SNPs only
-    --remove-indels \        # SNPs only, no indels
+    --max-alleles 2 \
+    --remove-indels \
     --recode --stdout | \
     bgzip > ${OUT_DIR}/${PREFIX}_stage3.vcf.gz
 
@@ -39,6 +41,7 @@ echo ""
 echo "=== Stage 3 Complete ==="
 echo "End time: $(date)"
 echo ""
+echo "SNPs after stage 3:"
 bcftools stats ${OUT_DIR}/${PREFIX}_stage3.vcf.gz | grep "number of SNPs:"
 bcftools stats ${OUT_DIR}/${PREFIX}_stage3.vcf.gz | grep "number of samples:"
 echo ""
@@ -52,7 +55,7 @@ echo "  - Duplicates: skipped"
 echo ""
 echo "Stage 2 (bias):"
 echo "  - BQBZ, MQBZ, RPBZ: |Z| <= 3"
-echo " -then some pulled to merge with ddRAD"
+echo ""
 echo "Stage 3 (this script):"
 echo "  - Max missingness: 20% per SNP"
 echo "  - Min MAC: 3"
