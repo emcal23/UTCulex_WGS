@@ -17,7 +17,7 @@ VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
 PREFIX=Culex_WGS_65samp
 
-echo "=== Stage 3: SNP Filtering ==="
+echo "=== Stage 3: SNP Filtering + Thinning ==="
 echo "Input: $VCF_IN"
 echo "Start time: $(date)"
 
@@ -32,18 +32,19 @@ vcftools --gzvcf $VCF_IN \
     --min-alleles 2 \
     --max-alleles 2 \
     --remove-indels \
+    --thin 1000 \
     --recode --stdout | \
-    bgzip > ${OUT_DIR}/${PREFIX}_stage3.vcf.gz
+    bgzip > ${OUT_DIR}/${PREFIX}_stage3_thinned.vcf.gz
 
-bcftools index ${OUT_DIR}/${PREFIX}_stage3.vcf.gz
+bcftools index ${OUT_DIR}/${PREFIX}_stage3_thinned.vcf.gz
 
 echo ""
 echo "=== Stage 3 Complete ==="
 echo "End time: $(date)"
 echo ""
-echo "SNPs after stage 3:"
-bcftools stats ${OUT_DIR}/${PREFIX}_stage3.vcf.gz | grep "number of SNPs:"
-bcftools stats ${OUT_DIR}/${PREFIX}_stage3.vcf.gz | grep "number of samples:"
+echo "SNPs after stage 3 + thinning:"
+bcftools stats ${OUT_DIR}/${PREFIX}_stage3_thinned.vcf.gz | grep "number of SNPs:"
+bcftools stats ${OUT_DIR}/${PREFIX}_stage3_thinned.vcf.gz | grep "number of samples:"
 echo ""
 echo "=========================================="
 echo "ALL FILTERS APPLIED (cumulative):"
@@ -61,4 +62,5 @@ echo "  - Max missingness: 20% per SNP"
 echo "  - Min MAC: 3"
 echo "  - Biallelic SNPs only"
 echo "  - No indels"
+echo "  - Positional thinning: 1 SNP per 1000 bp"
 echo "=========================================="
