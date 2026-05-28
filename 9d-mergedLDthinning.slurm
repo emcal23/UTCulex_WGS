@@ -14,7 +14,7 @@ module load plink
 module load bcftools
 module load htslib
 
-IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g20_ABfiltered.vcf.gz
+IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g10_ABfiltered.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered
 OUT_STEM=${OUT_DIR}/merged_WGS_ddRAD_g70m70g20_ABfiltered_LDpruned
 
