@@ -4,7 +4,7 @@
 #SBATCH --ntasks=4
 #SBATCH --mem=32G
 #SBATCH --account=saarman-np
-#SBATCH --partition=saarman-shared-np
+#SBATCH --partition=saarman-np
 #SBATCH --job-name=plink_strict
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=emily.calhoun@usu.edu
