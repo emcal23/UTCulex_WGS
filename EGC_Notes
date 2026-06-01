@@ -356,3 +356,32 @@ Input SNPs:          29075
 SNPs after pruning:  13910
 Samples retained:    167
 Genotyping rate:     0.75
+
+
+Tried 70 70 10 
+-still some separation
+=== FILTERED DATASET SUMMARY ===
+Total samples: 167 
+Total SNPs: 2097 
+Total alleles: 4045 
+SNPs (from VCF): 2097 
+________________________
+
+
+Trying 70 70 05 SUPER STRICT
+
+= Script 2 Summary ===
+Filter set used:  g70m70g05
+Output VCF:       merged_WGS_ddRAD_g70m70g05_filtered.recode.vcf.gz
+Final SNPs:       742
+Final samples:    167
+
+=== Script 3 Summary ===
+Input SNPs (post-missingness filter): 742
+Final SNPs (post-AB filter):          618
+Final samples:                        167
+
+=== LD Pruning Summary ===
+Input SNPs:          618
+SNPs after pruning:  323
+Samples retained:    167
