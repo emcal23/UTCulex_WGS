@@ -29,6 +29,17 @@ plink --vcf $VCF \
 
 echo "PLINK conversion done: $(date)"
 
+echo "=== Step 1b: Fix chromosome names for ADMIXTURE ==="
+# ADMIXTURE requires integer chromosome codes, not scaffold names
+awk '{$1 = substr($1, 10); print}' merged_admixture_input.bim > merged_admixture_input_fix.bim
+mv merged_admixture_input.bim merged_admixture_input_original.bim
+mv merged_admixture_input_fix.bim merged_admixture_input.bim
+
+echo "Checking first few lines of fixed .bim:"
+head -5 merged_admixture_input.bim
+echo "Sample count:"
+wc -l merged_admixture_input.fam
+
 echo "=== Step 2: ADMIXTURE K=2 to K=5 with cross-validation ==="
 
 for K in 2 3 4 5; do
@@ -39,7 +50,8 @@ for K in 2 3 4 5; do
 done
 
 echo "=== Step 3: Summarize cross-validation errors ==="
-echo "CV errors across K values:"
-grep "CV error" admixture_K*.log | sort -t: -k2 -n
+echo ""
+echo "CV errors (lower = better K):"
+grep "CV error" admixture_K*.log
 
 echo "=== All done: $(date) ==="
