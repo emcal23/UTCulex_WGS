@@ -9,8 +9,8 @@
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
-module load plink
-module load admixture
+module load plink/1.90
+module load admixture/1.3.0
 
 VCF=/uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g05_ABfiltered_LDpruned.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/saarman-group1/Cx_WGS/Cx_WGS_ddRAD_merged/admixture
