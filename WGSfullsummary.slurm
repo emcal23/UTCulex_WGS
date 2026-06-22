@@ -5,7 +5,7 @@
 #SBATCH --mem=16G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
-#SBATCH --job-name="admixture_K2-5"
+#SBATCH --job-name="summary"
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
