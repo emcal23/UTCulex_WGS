@@ -133,6 +133,183 @@ Stage 2 (bias filtered): 40,670,398 SNPs
 Removed: 31,941,138 SNPs
 Percentage removed: ~44%
 
+
+
+
+###########################################################
+# WGS Bioinformatics Pipeline Final Notes
+# Last updated: June 2026
+
+## Overview
+Whole genome sequencing pipeline for Culex pipiens complex population genetics.
+65 samples input, 52 samples retained after QC filtering in R,
+281,262 final SNPs (thinned) used for PCA and FST analyses.
+Reference genome: Cpip29_nodeb_gfill_mito.fasta (unpublished, stored on CHPC)
+
+## Software versions
+- BWA-MEM2 v2.2.1
+- samtools v1.16
+- bcftools v1.23
+- GATK [version TBD]
+- vcftools [version TBD]
+- FastQC v0.12.1
+- MultiQC v1.12
+- Python 3.6+
+
+## Sample information
+- 65 total samples across 7 populations
+- Libraries prepared by Andrea Gloria-Soria at Connecticut Agricultural Experiment Station
+- Sequencing platform: Illumina Nova-Seq X 
+- Target: ~40 million reads per sample, ≥15x non-repetitive coverage
+- Read length: 150 bp paired-end
+- Mean coverage achieved: ~14x (range 1.1x-40.6x)
+
+## Population sample sizes (pre/post filtering)
+| Population | Pre-filter | Post-filter | Dropped |
+|---|---|---|---|
+| Box Elder (BE) | 4 | 3 | 1 |
+| Cache | 5 | 5 | 0 |
+| Salt Lake (SLC) | 13 | 10 | 3 |
+| Southwest (SGE) | 6 | 5 | 1 |
+| Utah County (UTCO) | 18 | 14 | 4 |
+| Weber (OGD) | 5 | 5 | 0 |
+| West Millard (WMAD) | 14 | 10 | 4 |
+| Total | 65 | 52 | 13 |
+
+## Pipeline steps
+
+### 1. FastQC (1a_fastqc.slurm)
+- Per-sample read quality assessment
+- Runs as SLURM job array (one job per FASTQ file)
+- Input: raw FASTQ files in Cx_WGS_raw/
+- Output: per-sample .html reports in fastQC_WGS_Cx/
+
+### 1b. MultiQC (1b_multiqc.slurm)
+- Aggregates all FastQC reports into single summary
+- Output: multiqc_report.html in fastQC_WGS_Cx/multiqc/
+- NOTE: No trimming performed - FastQC/MultiQC results
+  deemed acceptable to proceed directly to alignment
+
+### 2. BWA-MEM2 alignment (2_bwamem-alignrefs.slurm + 2b_bwa_mem.pl)
+- Paired-end alignment to Cpip29_nodeb_gfill_mito.fasta reference
+- Perl wrapper runs 4 samples in parallel (4 jobs x 2 threads each)
+- Flags: -M (mark split alignments)
+- Skips samples with existing BAM (safe to resubmit if job dies)
+- NOTE: No read groups added — compatible with bcftools variant
+  caller but would need to be added for GATK HaplotypeCaller
+- Output: per-sample sorted BAMs in Cx_WGS_bwa/
+
+### 3. Merge lanes (3_mergebams.slurm)
+- Merges per-lane BAMs into per-sample BAMs
+- Samples with single lane are copied directly
+- Creates mergedbam_list.txt for downstream array jobs
+- Input: Cx_WGS_bwa/ (lane-level BAMs)
+- Output: Cx_WGS_mergedbams/ (sample-level BAMs)
+
+### 4. Mark duplicates (4_markdups.slurm)
+- Runs as SLURM job array (one job per sample)
+- Six-step samtools pipeline:
+  1. Name sort
+  2. fixmate -m (adds mc tag for markdup)
+  3. Coordinate sort
+  4. markdup (marks but does NOT remove duplicates)
+  5. Index
+  6. flagstat QC
+- Intermediate files cleaned up automatically
+- Output: per-sample .markdup.bam + .flagstat.txt in Cx_WGS_final/
+
+### 4. Flagstat summary (4b_flagstat_summary.py)
+- Python script aggregating per-sample flagstat files
+- Extracts: total reads, mapped reads, mapping%, duplicate count, dup%
+- Output: mergedflagstat_summary_clean.txt in Cx_WGS_finalbams/
+- NOTE: file is in Cx_WGS_finalbams/ not Cx_WGS_final/
+
+### 5. Coverage summary (5-rdeptable.py  + runner script)
+- Python script computing weighted mean depth per sample
+- Uses samtools coverage, weights by scaffold length
+- Output: mergedcoverage_summary.txt in Cx_WGS_finalbams/
+- NOTE: file is in Cx_WGS_finalbams/ not Cx_WGS_final/
+
+### 6. Variant calling - Stage 1 (6_bcftools_call.slurm)
+- Joint variant calling across all 65 samples simultaneously
+- bcftools mpileup | bcftools call pipeline
+- Filters applied during calling:
+  - --min-BQ 30 (minimum base quality)
+  - --min-MQ 30 (minimum mapping quality)
+  - --max-depth 100 (per sample depth cap)
+  - Duplicates skipped (default bcftools behavior)
+- --multiallelic-caller model, --variants-only
+- Output: Culex_final_variants.vcf.gz (69,238,059 SNPs, 65 samples)
+
+### 7. Bias filtering - Stage 2 (7_gatk_bias_filter.slurm)
+- Uses GATK VariantFiltration ONLY for bias Z-score filters
+- NOT used for variant calling (no read groups required)
+- Three bias filters applied (|Z| <= 3 threshold):
+  - BQBZ: base quality bias
+  - MQBZ: mapping quality bias
+  - RPBZ: read position bias
+- Requires bgzip recompression for GATK compatibility
+- Only PASS variants retained after filtering
+- Output: Culex_stage2_bias_filtered.vcf.gz (39,132,169 SNPs)
+
+### 8. Population filtering + thinning - Stage 3 (7b_vcftools_stage3.slurm)
+- vcftools filters applied:
+  - --max-missing 0.80 (≥80% genotyping rate per locus)
+  - --mac 3 (minimum minor allele count)
+  - --min-alleles 2 --max-alleles 2 (biallelic only)
+  - --remove-indels (SNPs only)
+  - --thin 1000 (1 SNP per 1000bp window for LD reduction)
+- Output: Culex_WGS_65samp_stage3_thinned.vcf.gz (281,262 SNPs)
+
+### Downstream analyses (R)
+- PCA, FST computed in R on 281,262 SNP thinned dataset
+- 13 low quality samples removed in R based on PCA outlier status
+  leaving 52 samples for final analyses
+- ADMIXTURE on WGS-only dataset: NOT YET RUN (as of June 2026)
+- Scripts in: [R script directory TBD]
+
+## Key numbers summary
+| Step | Filter | SNPs | Samples |
+|---|---|---|---|
+| Stage 1 - bcftools calling | MQ≥30, BQ≥30, MaxDP=100 | 69,238,059 | 65 |
+| Stage 2 - GATK bias filter | BQBZ/MQBZ/RPBZ \|Z\|≤3 | 39,132,169 | 65 |
+| Stage 3 - vcftools + thin | missing≤20%, MAC≥3, thin 1000bp | 281,262 | 65 |
+| Final (post R QC) | PCA outlier removal | 281,262 | 52 |
+
+## Known issues / decisions to revisit
+- 13 low-quality samples removed in R after Stage 3 rather than before
+  RECOMMENDATION: consider removing poor coverage/mapping samples
+  BEFORE Stage 3 filtering and rerunning — may recover additional SNPs
+  Candidates for removal (coverage <5x or mapping <75%):
+    - UTCO_132_137_056 (1.11x, 22.84% mapped)
+    - BE_201_191_002 (1.54x, 46.12% mapped)
+    - SLC_053_141_052 (2.17x, 42.00% mapped)
+    - SGE_011_106_087 (4.48x, 74.44% mapped)
+    - WMAD_007_112_081 (4.43x, 57.45% mapped)
+    - WMAD_019_160_033 (4.96x, 66.45% mapped)
+    - UTCO_134_113_080 (4.92x, 53.57% mapped)
+    - UTCO_123_161_032 (5.13x, 53.91% mapped)
+- WGS+ddRAD merged dataset (8-9 scripts) not used in final analyses
+- ADMIXTURE on WGS-only dataset still to be run
+- Reference genome Cpip29_nodeb_gfill_mito.fasta is unpublished —
+  citation needed before manuscript submission
+
+## Files to cite
+- BWA-MEM2: Vasimuddin et al. 2019
+- samtools: Li et al. 2009
+- bcftools: Danecek et al. 2021
+- GATK: McKenna et al. 2010
+- vcftools: Danecek et al. 2011
+- FastQC: Andrews 2010
+- MultiQC: Ewels et al. 2016
+- [Reference genome citation TBD]
+
+
+
+
+
+
+############### NOTES FROM WGS - ddRAD attempted merge ######################
 Next steps:
 Fork A: Extract samples for ddRAD merge! (Step 8)
 -Chose 5 North, 5 South, 11 SLC - 21 total best looking samples in terms of coverage 
