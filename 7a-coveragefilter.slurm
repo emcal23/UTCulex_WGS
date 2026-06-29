@@ -26,10 +26,10 @@ bcftools query -l $VCF_IN | wc -l
 # Create sample removal file
 REMOVE_FILE=${OUT_DIR}/samples_to_remove.txt
 cat > $REMOVE_FILE << 'EOF'
-UTCO_132_137_056
-BE_201_191_002
-SLC_053_141_052
-WMAD_007_112_081
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/UTCO_132_137_056.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/BE_201_191_002.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/SLC_053_141_052.markdup.bam
+/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_finalbams/WMAD_007_112_081.markdup.bam
 EOF
 
 bcftools view \
