@@ -305,6 +305,46 @@ Reference genome: Cpip29_nodeb_gfill_mito.fasta (unpublished, stored on CHPC)
 - [Reference genome citation TBD]
 
 
+Admixture
+
+grep "CV error" /uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_admixture/admixture_K*_rep*.log | sort
+
+K  Mean CV Error Min CV Error
+1  0.475           0.475
+2  0.425           0.414
+3  0.425           0.393
+4  0.430           0.428
+5  0.470           0.464
+6  0.542           0.518
+
+K=3 is best supported K — it has the lowest minimum CV error (0.393) across any replicate. K=2 is close behind, which makes sense given your two-species system.
+However, K=3 has high variance across replicates (0.393 to 0.453), meaning some runs converged to a good solution and some didn't. 
+
+Plotted admixture_K3_rep3.Q in R in ~/saarman-group/Cx_WGS/Cx_WGS_admixture/WGSadmixture.R
+
+
+population         V1          V2        V3
+1      Box Elder (BE) 0.03970100 0.000010000 0.9602890
+2       Cache (Cache) 0.00001000 0.000010000 0.9999800
+3     Salt Lake (SLC) 0.06515683 0.065320167 0.8695229
+4     Southwest (SGE) 0.15105617 0.833318333 0.0156255
+5  Utah County (UTCO) 0.18402953 0.001376353 0.8145941
+6         Weber (OGD) 0.00001000 0.000010000 0.9999800
+7 West Millard (WMAD) 0.23077254 0.026476077 0.7427514
+
+Component 2 (red) = quinquefasciatus — SGE is 83% red, and SGE is your known quinquefasciatus population. Unambiguous.
+Component 3 (yellow) = pipiens — BE, Cache, and OGD are essentially 100% yellow, and those northern populations are your pure pipiens. Also unambiguous.
+Component 1 (blue) = hybrid/admixed ancestry — it's highest in WMAD (23%) and UTCO (18%), which are your central/western populations closest to the pipiens/quinquefasciatus contact zone.
+
+
+
+
+
+
+
+
+
+
 
 
 
