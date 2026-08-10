@@ -11,13 +11,13 @@
 
 module load plink
 
-VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_WGS_61samp_stage3_filtered.vcf.gz
+VCF_IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_WGS_61samp_stage3_filtered_LDpruned.vcf.gz
 OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_pca
-PREFIX=Culex_WGS_61samp_pca
+PREFIX=Culex_WGS_61samp_pca_LDpruned
 
 mkdir -p $OUT_DIR
 
-echo "=== PLINK PCA ==="
+echo "=== PLINK PCA — LD-pruned ==="
 echo "Input: $VCF_IN"
 echo "Start time: $(date)"
 
