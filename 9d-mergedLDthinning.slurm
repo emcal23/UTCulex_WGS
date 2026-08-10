@@ -9,16 +9,15 @@
 #SBATCH --mail-user=emily.calhoun@usu.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
 
-
 module load plink
 module load bcftools
 module load htslib
 
-IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered/merged_WGS_ddRAD_g70m70g05_ABfiltered.vcf.gz
-OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_ddRAD_merged/vcf_filtered
-OUT_STEM=${OUT_DIR}/merged_WGS_ddRAD_g70m70g05_ABfiltered_LDpruned
+IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf/Culex_WGS_61samp_stage3_filtered.vcf.gz
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_vcf
+OUT_STEM=${OUT_DIR}/Culex_WGS_61samp_stage3_filtered_LDpruned
 
-echo "=== LD Pruning (r2-based) ==="
+echo "=== LD Pruning (r2-based) — WGS Stage 3 dataset ==="
 echo "Start time: $(date)"
 echo "Input SNPs: $(bcftools view -H $IN | wc -l)"
 
@@ -26,8 +25,10 @@ echo "Input SNPs: $(bcftools view -H $IN | wc -l)"
 # 50-SNP window, sliding by 10, r2 threshold 0.5
 plink --vcf ${IN} \
       --double-id --allow-extra-chr \
+      --set-missing-var-ids @:# \
       --indep-pairwise 50 10 0.5 \
-      --out ${OUT_STEM}
+      --out ${OUT_STEM} \
+      --threads 8
 
 echo "SNPs to keep: $(wc -l < ${OUT_STEM}.prune.in)"
 echo "SNPs to remove: $(wc -l < ${OUT_STEM}.prune.out)"
@@ -35,9 +36,11 @@ echo "SNPs to remove: $(wc -l < ${OUT_STEM}.prune.out)"
 # Step 2: Extract pruned SNP set and recode to VCF
 plink --vcf ${IN} \
       --double-id --allow-extra-chr \
+      --set-missing-var-ids @:# \
       --extract ${OUT_STEM}.prune.in \
       --recode vcf \
-      --out ${OUT_STEM}
+      --out ${OUT_STEM} \
+      --threads 8
 
 # Step 3: bgzip and index
 bgzip ${OUT_STEM}.vcf
