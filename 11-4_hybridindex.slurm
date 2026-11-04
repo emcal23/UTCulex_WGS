@@ -12,13 +12,15 @@
 module load plink/1.90
 
 IN=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_admixture/52samp/Culex_WGS_52samp_all
-OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_hybridindex
+OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_hybridindex_v2
+#OUT_DIR=/uufs/chpc.utah.edu/common/home/u1055819/saarman-group/Cx_WGS/Cx_WGS_hybridindex
 mkdir -p $OUT_DIR
 cd $OUT_DIR
 
 # 1. Reference groups
 grep -E "^SGE_" ${IN}.fam | awk '{print $1, $2}' > ref_SGE.txt
-grep -E "^(Cache|BE|OGD)_" ${IN}.fam | awk '{print $1, $2}' > ref_north.txt
+grep -E "^(Cache|BE|OGD|UTCO|WMAD)_" ${IN}.fam | awk '{print $1, $2}' > ref_north.txt
+#grep -E "^(Cache|BE|OGD)_" ${IN}.fam | awk '{print $1, $2}' > ref_north.txt
 echo "SGE reference n:"; wc -l < ref_SGE.txt
 echo "North reference n:"; wc -l < ref_north.txt
 
@@ -28,10 +30,13 @@ plink --bfile $IN --allow-extra-chr --keep-allele-order --keep ref_north.txt --f
 
 # 3. AIMs: frequency difference >= 0.8, >=6/8 SGE alleles and >=20/26 north alleles genotyped
 #    Output: SNP ID + which allele (A1 or A2) is the quinx allele
-awk 'NR==FNR { if (FNR>1 && $6>=6) { s[$2]=$5 }; next }
-     FNR>1 && ($2 in s) && $6>=20 {
+ awk 'NR==FNR { if (FNR>1 && $6>=6) { s[$2]=$5 }; next }
+     FNR>1 && ($2 in s) && $6>=60 {
        d = s[$2] - $5; if (d < 0) d = -d;
-       if (d >= 0.8) print $2, (s[$2] > $5 ? "A1" : "A2")
+       if (d >= 0.95) print $2, (s[$2] > $5 ? "A1" : "A2")
+#     FNR>1 && ($2 in s) && $6>=20 {
+#       d = s[$2] - $5; if (d < 0) d = -d;
+#       if (d >= 0.8) print $2, (s[$2] > $5 ? "A1" : "A2")
      }' freq_SGE.frq freq_north.frq > aims_d0.8_all.txt
 echo "AIMs (delta >= 0.8) before thinning:"; wc -l < aims_d0.8_all.txt
 
